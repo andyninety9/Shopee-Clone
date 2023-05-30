@@ -53,7 +53,7 @@ export default function Register() {
                   Đăng ký
                 </button>
               </div>
-              <div className='mt-8 flex items-center justify-center '>
+              <div className='mt-8 flex items-center justify-center'>
                 <span className='text-gray-400'>Bạn đã có tài khoản?</span>
                 <Link to='/login' className='ml-[3px] text-orange'>
                   Đăng nhập
