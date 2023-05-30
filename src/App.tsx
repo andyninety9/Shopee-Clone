@@ -1,5 +1,8 @@
+import useRouterElement from './useRouterElement'
+
 function App() {
-  return <div></div>
+  const routeElement = useRouterElement()
+  return <div>{routeElement}</div>
 }
 
 export default App
