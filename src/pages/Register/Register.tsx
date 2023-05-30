@@ -1,19 +1,50 @@
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
 import Input from 'src/components/Input'
-// import { getRules } from 'src/utils/rules'
 import { Schema, schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
+import { useMutation } from '@tanstack/react-query'
+import { registerAccount } from 'src/apis/auth.api'
+import { omit } from 'lodash'
+import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
+import { ResponseApi } from 'src/types/utils.type'
+import { type } from '../../utils/rules'
 
 export default function Register() {
   const {
+    setError,
     register,
     handleSubmit,
     formState: { errors }
   } = useForm<Schema>({ resolver: yupResolver(schema) })
 
+  const registerAccountMutation = useMutation({
+    mutationFn: (body: Omit<Schema, 'confirm_password'>) => registerAccount(body)
+  })
   const onSubmit = handleSubmit((data) => {
-    console.log(data)
+    const body = omit(data, ['confirm_password'])
+    registerAccountMutation.mutate(body, {
+      onSuccess: (data) => {
+        console.log(data)
+      },
+      onError: (error) => {
+        if (isAxiosUnprocessableEntityError<ResponseApi<Omit<Schema, 'confirm_password'>>>(error)) {
+          const formError = error.response?.data.data
+          if (formError?.email) {
+            setError('email', {
+              message: formError.email,
+              type: 'Server'
+            })
+          }
+          if (formError?.password) {
+            setError('password', {
+              message: formError.password,
+              type: 'Server'
+            })
+          }
+        }
+      }
+    })
   })
   return (
     <div className='bg-orange'>
