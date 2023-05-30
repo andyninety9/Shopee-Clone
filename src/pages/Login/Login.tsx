@@ -1,12 +1,16 @@
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router-dom'
+import Input from 'src/components/Input'
+import { Schema, getRules } from 'src/utils/rules'
+import { schema } from 'src/utils/rules'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 export default function Login() {
   const {
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm()
+  } = useForm<Schema>({ resolver: yupResolver(schema) })
 
   const onSubmit = handleSubmit((data) => {
     console.log(data)
@@ -19,25 +23,23 @@ export default function Login() {
           <div className='lg:col-span-2 lg:col-start-4'>
             <form className='rounded bg-white p-10 shadow-sm' onSubmit={onSubmit}>
               <div className='text-2xl'>Đăng Nhập</div>
-              <div className='mt-8'>
-                <input
-                  type='email'
-                  name='email'
-                  className='w-full rounded-sm border border-gray-300 p-3 outline-none focus:border-gray-500 focus:shadow-sm'
-                  placeholder='Email'
-                />
-                <div className='mt-1 min-h-[1rem] text-sm text-red-600'></div>
-              </div>
-              <div className='mt-3'>
-                <input
-                  autoComplete='on'
-                  type='password'
-                  name='password'
-                  className='w-full rounded-sm border border-gray-300 p-3 outline-none focus:border-gray-500 focus:shadow-sm'
-                  placeholder='Password'
-                />
-                <div className='mt-1 min-h-[1rem] text-sm text-red-600'></div>
-              </div>
+              <Input
+                type='text'
+                name='email'
+                errorMessage={errors?.email?.message}
+                placeholder='Email'
+                className='mt-8'
+                register={register}
+              />
+              <Input
+                autoComplete='on'
+                type='password'
+                name='password'
+                errorMessage={errors?.password?.message}
+                placeholder='Password'
+                className='mt-3'
+                register={register}
+              />
               <div className='mt-3'>
                 <button
                   type='submit'

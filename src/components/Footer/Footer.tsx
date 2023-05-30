@@ -4,10 +4,10 @@ export default function Footer() {
       <div className='mx-auto max-w-7xl px-4 text-neutral-500'>
         <div className='grid grid-cols-1 gap-4 text-sm lg:grid-cols-3'>
           <div className='lg:col-span-1'>
-            <div>© 2023 Shopee. Tất cả các quyền được bảo lưu.</div>
+            <div className='text-center lg:text-left'>© 2023 Shopee. Tất cả các quyền được bảo lưu.</div>
           </div>
           <div className='lg:col-span-2'>
-            <div>
+            <div className='text-center'>
               Quốc gia & Khu vực: Singapore | Indonesia | Đài Loan | Thái Lan | Malaysia | Việt Nam | Philippines |
               Brazil | México | Colombia | Chile
             </div>

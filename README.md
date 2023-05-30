@@ -1,16 +1,17 @@
 # Dự án Shopee Clone Typescript
 
-
 ## Chức năng trong dự án:
 
 ### Authentication Module:
+
 > Quản lý bằng JWT (JSON WEB TOKEN)
 
     1. Đăng ký tài khoản
     2. Đăng nhập
     3. Đăng xuất
+    4. Yup Validation
 
-### Trang danh sách sản phẩm: 
+### Trang danh sách sản phẩm:
 
     1. Phân trang
     2. Sort (sắp xếp) theo từng thuộc tính sản phẩm
@@ -48,4 +49,3 @@
     . Hỗ trợ SEO với React Helmet
     . Mô hình hoá các component với story book
     . Unit Test
-    
