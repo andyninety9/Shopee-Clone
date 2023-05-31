@@ -1,5 +1,5 @@
 import { useForm } from 'react-hook-form'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Input from 'src/components/Input'
 import { Schema, schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
@@ -8,7 +8,7 @@ import { registerAccount } from 'src/apis/auth.api'
 import { omit } from 'lodash'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { ResponseApi } from 'src/types/utils.type'
-import { type } from '../../utils/rules'
+import { toast } from 'react-toastify'
 
 export default function Register() {
   const {
@@ -17,7 +17,7 @@ export default function Register() {
     handleSubmit,
     formState: { errors }
   } = useForm<Schema>({ resolver: yupResolver(schema) })
-
+  const navigate = useNavigate()
   const registerAccountMutation = useMutation({
     mutationFn: (body: Omit<Schema, 'confirm_password'>) => registerAccount(body)
   })
@@ -25,21 +25,19 @@ export default function Register() {
     const body = omit(data, ['confirm_password'])
     registerAccountMutation.mutate(body, {
       onSuccess: (data) => {
-        console.log(data)
+        // console.log(data)
+        navigate('/')
+        toast.success('Đăng nhập thành công')
       },
       onError: (error) => {
         if (isAxiosUnprocessableEntityError<ResponseApi<Omit<Schema, 'confirm_password'>>>(error)) {
           const formError = error.response?.data.data
-          if (formError?.email) {
-            setError('email', {
-              message: formError.email,
-              type: 'Server'
-            })
-          }
-          if (formError?.password) {
-            setError('password', {
-              message: formError.password,
-              type: 'Server'
+          if (formError) {
+            Object.keys(formError).forEach((key) => {
+              setError(key as keyof Omit<Schema, 'confirm_password'>, {
+                message: formError[key as keyof Omit<Schema, 'confirm_password'>],
+                type: 'Server'
+              })
             })
           }
         }
@@ -50,8 +48,15 @@ export default function Register() {
     <div className='bg-orange'>
       <div className='container'>
         <div className='grid grid-cols-1 py-2 lg:grid-cols-5 lg:py-12 lg:pr-10'>
+          <div className='mb-5 h-[200px] w-full lg:col-span-3 lg:col-start-1 lg:h-full lg:pr-5'>
+            <img
+              className='h-full w-full rounded-md object-cover object-right shadow-sm'
+              src='/images/shopee-sale.jpg'
+              alt=''
+            />
+          </div>
           <div className='lg:col-span-2 lg:col-start-4'>
-            <form className='rounded bg-white p-10 shadow-sm' onSubmit={onSubmit} noValidate>
+            <form className='rounded bg-white p-10 shadow-sm lg:h-full' onSubmit={onSubmit} noValidate>
               <div className='text-2xl'>Đăng ký</div>
               <Input
                 type='text'
