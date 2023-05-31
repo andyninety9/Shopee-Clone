@@ -13,9 +13,9 @@ export default function useRouterElement() {
     {
       path: '/login',
       element: (
-        <RegisterLayout>
+        <LoginLayout>
           <Login />
-        </RegisterLayout>
+        </LoginLayout>
       )
     },
     {
