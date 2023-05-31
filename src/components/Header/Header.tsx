@@ -59,7 +59,7 @@ export default function Header() {
                 name='search'
                 className='flex-grow border-none bg-transparent px-3 py-2 text-black outline-none'
               />
-              <button className='h-full min-w-[40px] flex-shrink-0 -translate-x-[50px] items-center rounded-md bg-orange hover:opacity-90 lg:translate-x-0 lg:px-6'>
+              <button className='h-full min-w-[40px] flex-shrink-0 items-center rounded-md bg-orange hover:opacity-90 lg:px-6'>
                 <SearchIcon
                   sx={{
                     color: 'white'
