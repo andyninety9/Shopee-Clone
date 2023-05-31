@@ -10,7 +10,7 @@ export default function Header() {
   return (
     <div className='bg-gradient-RedOrange pb-2 pt-2'>
       <div className='container'>
-        <div className='flex justify-end'>
+        <div className='flex justify-center lg:justify-end'>
           <div className='flex cursor-pointer items-center py-1 text-[12px] text-white  hover:text-gray-300'>
             <LanguageIcon
               sx={{
