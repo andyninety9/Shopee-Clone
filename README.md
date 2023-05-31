@@ -9,8 +9,7 @@
     1. Đăng ký tài khoản
     2. Đăng nhập
     3. Đăng xuất
-    4. Yup Validation
-
+    
 ### Trang danh sách sản phẩm:
 
     1. Phân trang
@@ -49,3 +48,6 @@
     . Hỗ trợ SEO với React Helmet
     . Mô hình hoá các component với story book
     . Unit Test
+    . Validation: yup
+    . Axios - Lodash
+
