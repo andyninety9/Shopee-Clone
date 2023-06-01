@@ -11,14 +11,16 @@ import { LogoutAccount } from 'src/apis/auth.api'
 import { AppContext } from 'src/contexts/app.context'
 import { Fragment, useContext } from 'react'
 import { toast } from 'react-toastify'
+import path from 'src/constants/path'
 
 export default function Header() {
   const navigate = useNavigate()
-  const { isAuthenticated, setIsAuthenticated } = useContext(AppContext)
+  const { isAuthenticated, setIsAuthenticated, setProfile, profile } = useContext(AppContext)
   const logoutMutation = useMutation({
     mutationFn: LogoutAccount,
     onSuccess: () => {
       setIsAuthenticated(false)
+      setProfile(null)
       navigate('/')
       toast.success('Đăng xuất thành công')
     }
@@ -66,7 +68,10 @@ export default function Header() {
                 <div className='flex flex-col px-3 py-2'>
                   {isAuthenticated ? (
                     <Fragment>
-                      <button className='px-3 py-2 text-[12px] hover:text-orange' onClick={() => navigate('/profile')}>
+                      <button
+                        className='px-3 py-2 text-[12px] hover:text-orange'
+                        onClick={() => navigate(path.profile)}
+                      >
                         Tài khoản của tôi
                       </button>
                       <button className='mt-2 px-3 py-2 text-[12px] hover:text-orange'>Đơn mua</button>
@@ -78,13 +83,13 @@ export default function Header() {
                     <Fragment>
                       <button
                         className='mt-2 px-3 py-2 text-[12px] hover:text-orange'
-                        onClick={() => navigate('/register')}
+                        onClick={() => navigate(path.register)}
                       >
                         Đăng ký
                       </button>
                       <button
                         className='mt-2 px-3 py-2 text-[12px] hover:text-orange'
-                        onClick={() => navigate('/login')}
+                        onClick={() => navigate(path.login)}
                       >
                         Đăng nhập
                       </button>
@@ -104,7 +109,7 @@ export default function Header() {
               src=''
               alt=''
             />
-            <span>andyninety9</span>
+            <span>{profile?.email}</span>
           </Popover>
         </div>
         <div className='mt-2 grid grid-cols-12 items-center gap-4'>
@@ -216,7 +221,7 @@ export default function Header() {
             }
             className='col-span-1 justify-self-end'
           >
-            <Link to='/' className=''>
+            <Link to={path.home} className=''>
               <ShoppingCartOutlinedIcon
                 sx={{
                   color: 'white',
@@ -226,17 +231,6 @@ export default function Header() {
               />
             </Link>
           </Popover>
-          {/* <div className='col-span-1 col-start-12'>
-            <Link to='/' className=''>
-              <ShoppingCartOutlinedIcon
-                sx={{
-                  color: 'white',
-                  fontSize: '26px',
-                  cursor: 'pointer'
-                }}
-              />
-            </Link>
-          </div> */}
         </div>
         <div className='mt-1 hidden text-center text-[11px] font-light text-white lg:block lg:text-[13px]'>
           Người Yêu | Điện Thoại 1k | Đồ 1k | Free Ship | Quần Ngủ Nữ Sexy Cao Cấp | iPhone 14 Pro Max | Quần Áo Nam |

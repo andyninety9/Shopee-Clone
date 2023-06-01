@@ -15,7 +15,7 @@ import Button from 'src/components/Button'
 type FormData = Pick<Schema, 'email' | 'password'>
 const loginSchema = schema.pick(['email', 'password'])
 export default function Login() {
-  const { setIsAuthenticated } = useContext(AppContext)
+  const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const {
     setError,
     register,
@@ -26,10 +26,13 @@ export default function Login() {
   const loginAccountMutation = useMutation({
     mutationFn: (body: Omit<FormData, 'confirm_password'>) => LoginAccount(body)
   })
+
+  
   const onSubmit = handleSubmit((data) => {
     loginAccountMutation.mutate(data, {
-      onSuccess: () => {
+      onSuccess: (data) => {
         setIsAuthenticated(true)
+        setProfile(data.data.data.user)
         navigate('/')
         toast.success('Đăng nhập thành công')
       },
