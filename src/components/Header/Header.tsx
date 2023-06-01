@@ -91,7 +91,6 @@ export default function Header() {
             </div>
           </form>
           <Popover
-            initialOpen={true}
             renderPopover={
               <div className='relative max-w-[400px] rounded-sm border border-gray-200 bg-white p-2 text-[13px] shadow-md'>
                 <div className=''>
