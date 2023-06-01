@@ -5,13 +5,24 @@ import Avatar from '@mui/material/Avatar'
 import { Link } from 'react-router-dom'
 import SearchIcon from '@mui/icons-material/Search'
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
+import Popover from '../Popover'
 
 export default function Header() {
   return (
-    <div className='bg-gradient-RedOrange pb-2 pt-2'>
+    <div className='overflow-hidden bg-gradient-RedOrange pb-2 pt-2'>
       <div className='container'>
-        <div className='flex justify-center lg:justify-end'>
-          <div className='flex cursor-pointer items-center py-1 text-[12px] text-white  hover:text-gray-300'>
+        <div className='flex justify-end'>
+          <Popover
+            renderPopover={
+              <div className='relative rounded-sm border border-gray-200 bg-white shadow-md'>
+                <div className='flex flex-col px-3 py-2'>
+                  <button className='px-3 py-2 text-[12px] hover:text-orange'>Vietnamese</button>
+                  <button className='mt-2 px-3 py-2 text-[12px] hover:text-orange'>English</button>
+                </div>
+              </div>
+            }
+            className='flex cursor-pointer items-center py-1 text-[12px] text-white  hover:text-gray-300'
+          >
             <LanguageIcon
               sx={{
                 color: 'white',
@@ -20,7 +31,7 @@ export default function Header() {
                 }
               }}
             />
-            <span className='mx-1'>Tiếng Việt</span>
+            <span className='mx-1'>Vietnamese</span>
             <KeyboardArrowDownIcon
               sx={{
                 color: 'white',
@@ -29,8 +40,19 @@ export default function Header() {
                 }
               }}
             />
-          </div>
-          <div className='ml-6 flex cursor-pointer items-center py-1 text-[12px]  text-white hover:text-gray-300'>
+          </Popover>
+          <Popover
+            className='ml-6 flex cursor-pointer items-center py-1 text-[12px] text-white hover:text-gray-300'
+            renderPopover={
+              <div className='relative rounded-sm border border-gray-200 bg-white shadow-md'>
+                <div className='flex flex-col px-3 py-2'>
+                  <button className='px-3 py-2 text-[12px] hover:text-orange'>Tài khoản của tôi</button>
+                  <button className='mt-2 px-3 py-2 text-[12px] hover:text-orange'>Đơn mua</button>
+                  <button className='mt-2 px-3 py-2 text-[12px] hover:text-orange'>Đăng xuất</button>
+                </div>
+              </div>
+            }
+          >
             <Avatar
               sx={{
                 width: '24px',
@@ -42,9 +64,9 @@ export default function Header() {
               alt=''
             />
             <span>andyninety9</span>
-          </div>
+          </Popover>
         </div>
-        <div className='mt-4 grid grid-cols-12 items-center gap-4'>
+        <div className='mt-2 grid grid-cols-12 items-center gap-4'>
           <Link to={'/'} className='col-span-2'>
             <svg viewBox='0 0 192 65' className='h-9 fill-white lg:h-14'>
               <g fillRule='evenodd'>
@@ -52,14 +74,14 @@ export default function Header() {
               </g>
             </svg>
           </Link>
-          <form className='col-span-9'>
+          <form className='col-span-9 justify-center'>
             <div className='flex h-9 w-[200px] translate-x-[50px] rounded-md bg-white p-1 lg:w-full lg:-translate-x-0'>
               <input
                 type='text'
                 name='search'
                 className='flex-grow border-none bg-transparent px-3 py-2 text-black outline-none'
               />
-              <button className='h-full min-w-[40px] flex-shrink-0 -translate-x-[15px] items-center rounded-md bg-orange hover:opacity-90 lg:px-6'>
+              <button className='h-full min-w-[40px] flex-shrink-0 -translate-x-[122%] items-center rounded-md bg-orange hover:opacity-90 lg:translate-x-0 lg:px-6'>
                 <SearchIcon
                   sx={{
                     color: 'white'
@@ -68,7 +90,92 @@ export default function Header() {
               </button>
             </div>
           </form>
-          <div className='col-span-1 col-start-12'>
+          <Popover
+            initialOpen={true}
+            renderPopover={
+              <div className='relative max-w-[400px] rounded-sm border border-gray-200 bg-white p-2 text-[13px] shadow-md'>
+                <div className=''>
+                  <span className='opacity-60'>Sản phẩm mới thêm</span>
+                  <div className='mt-5'>
+                    <div className='mt-4 flex cursor-pointer items-center'>
+                      <div className='flex-shrink-0'>
+                        <img
+                          src='https://images.unsplash.com/photo-1661956602153-23384936a1d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxMXx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1600&q=60'
+                          alt='image1'
+                          className='h-11 w-11 object-cover'
+                        />
+                      </div>
+                      <div className='ml-2 flex-grow'>
+                        <div className='max-w-[200px] truncate'>
+                          Apple Ipad Pro M2 - 256gb (2022) - Bảo hành chính hãng
+                        </div>
+                      </div>
+                      <div className='ml-2 flex-shrink-0'>
+                        <span className='text-orange'>28.000.000</span>
+                      </div>
+                    </div>
+                    <div className='mt-4 flex cursor-pointer items-center'>
+                      <div className='flex-shrink-0'>
+                        <img
+                          src='https://images.unsplash.com/photo-1661956602153-23384936a1d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxMXx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1600&q=60'
+                          alt='image1'
+                          className='h-11 w-11 object-cover'
+                        />
+                      </div>
+                      <div className='ml-2 flex-grow'>
+                        <div className='max-w-[200px] truncate'>
+                          Apple Ipad Pro M2 - 256gb (2022) - Bảo hành chính hãng
+                        </div>
+                      </div>
+                      <div className='ml-2 flex-shrink-0'>
+                        <span className='text-orange'>28.000.000</span>
+                      </div>
+                    </div>
+                    <div className='mt-4 flex cursor-pointer items-center'>
+                      <div className='flex-shrink-0'>
+                        <img
+                          src='https://images.unsplash.com/photo-1661956602153-23384936a1d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxMXx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1600&q=60'
+                          alt='image1'
+                          className='h-11 w-11 object-cover'
+                        />
+                      </div>
+                      <div className='ml-2 flex-grow'>
+                        <div className='max-w-[200px] truncate'>
+                          Apple Ipad Pro M2 - 256gb (2022) - Bảo hành chính hãng
+                        </div>
+                      </div>
+                      <div className='ml-2 flex-shrink-0'>
+                        <span className='text-orange'>28.000.000</span>
+                      </div>
+                    </div>
+                    <div className='mt-4 flex cursor-pointer items-center'>
+                      <div className='flex-shrink-0'>
+                        <img
+                          src='https://images.unsplash.com/photo-1661956602153-23384936a1d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxMXx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1600&q=60'
+                          alt='image1'
+                          className='h-11 w-11 object-cover'
+                        />
+                      </div>
+                      <div className='ml-2 flex-grow'>
+                        <div className='max-w-[200px] truncate'>
+                          Apple Ipad Pro M2 - 256gb (2022) - Bảo hành chính hãng
+                        </div>
+                      </div>
+                      <div className='ml-2 flex-shrink-0'>
+                        <span className='text-orange'>28.000.000</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className='flex items-end justify-between'>
+                  <div className='opacity-60'>Đã thêm 5 sản phẩm</div>
+                  <button className='rounded-sm bg-orange px-3 py-2 text-white'>Xem giỏ hàng</button>
+                </div>
+              </div>
+            }
+            className='col-span-1 justify-self-end'
+          >
             <Link to='/' className=''>
               <ShoppingCartOutlinedIcon
                 sx={{
@@ -78,7 +185,18 @@ export default function Header() {
                 }}
               />
             </Link>
-          </div>
+          </Popover>
+          {/* <div className='col-span-1 col-start-12'>
+            <Link to='/' className=''>
+              <ShoppingCartOutlinedIcon
+                sx={{
+                  color: 'white',
+                  fontSize: '26px',
+                  cursor: 'pointer'
+                }}
+              />
+            </Link>
+          </div> */}
         </div>
         <div className='mt-1 hidden text-center text-[11px] font-light text-white lg:block lg:text-[13px]'>
           Người Yêu | Điện Thoại 1k | Đồ 1k | Free Ship | Quần Ngủ Nữ Sexy Cao Cấp | iPhone 14 Pro Max | Quần Áo Nam |
