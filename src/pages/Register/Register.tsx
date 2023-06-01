@@ -7,10 +7,14 @@ import { useMutation } from '@tanstack/react-query'
 import { registerAccount } from 'src/apis/auth.api'
 import { omit } from 'lodash'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
-import { ResponseApi } from 'src/types/utils.type'
+import { ErrorResponse } from 'src/types/utils.type'
 import { toast } from 'react-toastify'
+import { AppContext } from 'src/contexts/app.context'
+import { useContext } from 'react'
+import Button from 'src/components/Button'
 
 export default function Register() {
+  const { setIsAuthenticated } = useContext(AppContext)
   const {
     setError,
     register,
@@ -24,13 +28,13 @@ export default function Register() {
   const onSubmit = handleSubmit((data) => {
     const body = omit(data, ['confirm_password'])
     registerAccountMutation.mutate(body, {
-      onSuccess: (data) => {
-        // console.log(data)
+      onSuccess: () => {
+        setIsAuthenticated(true)
         navigate('/')
         toast.success('Đăng nhập thành công')
       },
       onError: (error) => {
-        if (isAxiosUnprocessableEntityError<ResponseApi<Omit<Schema, 'confirm_password'>>>(error)) {
+        if (isAxiosUnprocessableEntityError<ErrorResponse<Omit<Schema, 'confirm_password'>>>(error)) {
           const formError = error.response?.data.data
           if (formError) {
             Object.keys(formError).forEach((key) => {
@@ -85,9 +89,16 @@ export default function Register() {
                 register={register}
               />
               <div className='mt-3'>
-                <button className='w-full rounded-sm bg-orange px-2 py-4 text-center text-sm uppercase text-white opacity-80 hover:opacity-100'>
+                {/* <button className='w-full rounded-sm bg-orange px-2 py-4 text-center text-sm uppercase text-white opacity-80 hover:opacity-100'>
                   Đăng ký
-                </button>
+                </button> */}
+                <Button
+                  disabled={registerAccountMutation.isLoading}
+                  className='flex w-full items-center justify-center rounded-sm bg-orange px-2 py-4 text-center text-sm uppercase text-white opacity-80 hover:opacity-100'
+                  isLoading={registerAccountMutation.isLoading}
+                >
+                  Đăng ký
+                </Button>
               </div>
               <div className='mt-8 flex items-center justify-center'>
                 <span className='text-gray-400'>Bạn đã có tài khoản?</span>

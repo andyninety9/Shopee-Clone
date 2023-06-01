@@ -4,14 +4,18 @@ import Input from 'src/components/Input'
 import { Schema, schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
-import { ResponseApi } from 'src/types/utils.type'
+import { ErrorResponse } from 'src/types/utils.type'
 import { useMutation } from '@tanstack/react-query'
 import { LoginAccount } from 'src/apis/auth.api'
 import { toast } from 'react-toastify'
+import { useContext } from 'react'
+import { AppContext } from 'src/contexts/app.context'
+import Button from 'src/components/Button'
 
 type FormData = Pick<Schema, 'email' | 'password'>
 const loginSchema = schema.pick(['email', 'password'])
 export default function Login() {
+  const { setIsAuthenticated } = useContext(AppContext)
   const {
     setError,
     register,
@@ -25,12 +29,12 @@ export default function Login() {
   const onSubmit = handleSubmit((data) => {
     loginAccountMutation.mutate(data, {
       onSuccess: () => {
-        // console.log(data)
+        setIsAuthenticated(true)
         navigate('/')
         toast.success('Đăng nhập thành công')
       },
       onError: (error) => {
-        if (isAxiosUnprocessableEntityError<ResponseApi<FormData>>(error)) {
+        if (isAxiosUnprocessableEntityError<ErrorResponse<FormData>>(error)) {
           const formError = error.response?.data.data
           if (formError) {
             Object.keys(formError).forEach((key) => {
@@ -77,9 +81,13 @@ export default function Login() {
                 register={register}
               />
               <div className='mt-3'>
-                <button className='w-full rounded-sm bg-orange px-2 py-4 text-center text-sm uppercase text-white opacity-80 hover:opacity-100'>
+                <Button
+                  disabled={loginAccountMutation.isLoading}
+                  className='flex w-full items-center justify-center rounded-sm bg-orange px-2 py-4 text-center text-sm uppercase text-white opacity-80 hover:opacity-100'
+                  isLoading={loginAccountMutation.isLoading}
+                >
                   Đăng nhập
-                </button>
+                </Button>
               </div>
               <div className='mt-8 flex items-center justify-center '>
                 <span className='text-gray-400'>Bạn chưa có tài khoản?</span>

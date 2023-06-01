@@ -2,12 +2,30 @@ import LanguageIcon from '@mui/icons-material/Language'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { grey } from '@mui/material/colors'
 import Avatar from '@mui/material/Avatar'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import SearchIcon from '@mui/icons-material/Search'
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
 import Popover from '../Popover'
+import { useMutation } from '@tanstack/react-query'
+import { LogoutAccount } from 'src/apis/auth.api'
+import { AppContext } from 'src/contexts/app.context'
+import { Fragment, useContext } from 'react'
+import { toast } from 'react-toastify'
 
 export default function Header() {
+  const navigate = useNavigate()
+  const { isAuthenticated, setIsAuthenticated } = useContext(AppContext)
+  const logoutMutation = useMutation({
+    mutationFn: LogoutAccount,
+    onSuccess: () => {
+      setIsAuthenticated(false)
+      navigate('/')
+      toast.success('Đăng xuất thành công')
+    }
+  })
+  const handleLogout = () => {
+    logoutMutation.mutate()
+  }
   return (
     <div className='overflow-hidden bg-gradient-RedOrange pb-2 pt-2'>
       <div className='container'>
@@ -46,9 +64,32 @@ export default function Header() {
             renderPopover={
               <div className='relative rounded-sm border border-gray-200 bg-white shadow-md'>
                 <div className='flex flex-col px-3 py-2'>
-                  <button className='px-3 py-2 text-[12px] hover:text-orange'>Tài khoản của tôi</button>
-                  <button className='mt-2 px-3 py-2 text-[12px] hover:text-orange'>Đơn mua</button>
-                  <button className='mt-2 px-3 py-2 text-[12px] hover:text-orange'>Đăng xuất</button>
+                  {isAuthenticated ? (
+                    <Fragment>
+                      <button className='px-3 py-2 text-[12px] hover:text-orange' onClick={() => navigate('/profile')}>
+                        Tài khoản của tôi
+                      </button>
+                      <button className='mt-2 px-3 py-2 text-[12px] hover:text-orange'>Đơn mua</button>
+                      <button className='mt-2 px-3 py-2 text-[12px] hover:text-orange' onClick={handleLogout}>
+                        Đăng xuất
+                      </button>
+                    </Fragment>
+                  ) : (
+                    <Fragment>
+                      <button
+                        className='mt-2 px-3 py-2 text-[12px] hover:text-orange'
+                        onClick={() => navigate('/register')}
+                      >
+                        Đăng ký
+                      </button>
+                      <button
+                        className='mt-2 px-3 py-2 text-[12px] hover:text-orange'
+                        onClick={() => navigate('/login')}
+                      >
+                        Đăng nhập
+                      </button>
+                    </Fragment>
+                  )}
                 </div>
               </div>
             }
