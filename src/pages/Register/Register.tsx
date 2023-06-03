@@ -4,7 +4,6 @@ import Input from 'src/components/Input'
 import { Schema, schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { useMutation } from '@tanstack/react-query'
-import { registerAccount } from 'src/apis/auth.api'
 import { omit } from 'lodash'
 import { isAxiosUnprocessableEntityError } from 'src/utils/utils'
 import { ErrorResponse } from 'src/types/utils.type'
@@ -12,6 +11,7 @@ import { toast } from 'react-toastify'
 import { AppContext } from 'src/contexts/app.context'
 import { useContext } from 'react'
 import Button from 'src/components/Button'
+import authApi from '../../apis/auth.api'
 
 export default function Register() {
   const { setIsAuthenticated, setProfile } = useContext(AppContext)
@@ -23,7 +23,7 @@ export default function Register() {
   } = useForm<Schema>({ resolver: yupResolver(schema) })
   const navigate = useNavigate()
   const registerAccountMutation = useMutation({
-    mutationFn: (body: Omit<Schema, 'confirm_password'>) => registerAccount(body)
+    mutationFn: (body: Omit<Schema, 'confirm_password'>) => authApi.registerAccount(body)
   })
   const onSubmit = handleSubmit((data) => {
     const body = omit(data, ['confirm_password'])
@@ -90,9 +90,6 @@ export default function Register() {
                 register={register}
               />
               <div className='mt-3'>
-                {/* <button className='w-full rounded-sm bg-orange px-2 py-4 text-center text-sm uppercase text-white opacity-80 hover:opacity-100'>
-                  Đăng ký
-                </button> */}
                 <Button
                   disabled={registerAccountMutation.isLoading}
                   className='flex w-full items-center justify-center rounded-sm bg-orange px-2 py-4 text-center text-sm uppercase text-white opacity-80 hover:opacity-100'

@@ -1,28 +1,29 @@
-import React from 'react'
 import { Link } from 'react-router-dom'
 import StarOutlinedIcon from '@mui/icons-material/StarOutlined'
-import zIndex from '@mui/material/styles/zIndex'
+import { Product as ProductType } from 'src/types/product.type'
+import { formatCurrency, formatNumberToSocialStyle } from 'src/utils/utils'
 
-export default function Product() {
+interface Props {
+  product: ProductType
+}
+
+export default function Product({ product }: Props) {
   return (
     <Link to=''>
       <div className='overflow-hidden rounded-sm bg-white shadow transition-transform duration-100 hover:translate-y-[0.04rem] hover:shadow-md'>
         <div className='relative w-full pt-[100%] '>
-          <img
-            src='https://images.unsplash.com/photo-1685446983943-81ffb3073581?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxlZGl0b3JpYWwtZmVlZHwxOHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1600&q=60'
-            alt=''
-            className='absolute top-0 h-full w-full  bg-white object-cover'
-          />
+          <img src={product.image} alt='' className='absolute top-0 h-full w-full  bg-white object-cover' />
         </div>
         <div className='overflow-hidden p-2'>
-          <div className='min-h-[2rem] text-xs line-clamp-2'>
-            Quần đùi nam thể thao quần short hàng xuất cao cấp phong cách trẻ trung năng động T80
-          </div>
+          <div className='min-h-[2rem] text-xs line-clamp-2'>{product.name}</div>
           <div className='mt-3 flex items-center'>
-            <div className='max-w-[50%] truncate text-gray-500 line-through'>₫40.000</div>
-            <div className='ml-1 truncate text-orange'>
+            <div className='max-w-[50%] truncate text-gray-500 line-through'>
+              <span>{formatCurrency(product.price_before_discount)}</span>
               <span className='text-xs'>₫</span>
-              <span>20.000</span>
+            </div>
+            <div className='ml-1 truncate text-orange'>
+              <span>{formatCurrency(product.price)}</span>
+              <span className='text-xs'>₫</span>
             </div>
           </div>
           <div className='mt-3 flex items-center justify-start'>
@@ -64,10 +65,10 @@ export default function Product() {
                   }}
                 />
               </div>
-              Đã bán 2,6k
+              Đã bán {formatNumberToSocialStyle(product.sold)}
             </div>
           </div>
-          <div className='mt-1 text-[11px]'>TP.Hồ Chí Minh</div>
+          <div className='mt-1 text-[11px]'>Còn {formatNumberToSocialStyle(product.quantity)} sản phẩm</div>
         </div>
       </div>
     </Link>

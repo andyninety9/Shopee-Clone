@@ -7,17 +7,17 @@ import SearchIcon from '@mui/icons-material/Search'
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
 import Popover from '../Popover'
 import { useMutation } from '@tanstack/react-query'
-import { LogoutAccount } from 'src/apis/auth.api'
 import { AppContext } from 'src/contexts/app.context'
 import { Fragment, useContext } from 'react'
 import { toast } from 'react-toastify'
 import path from 'src/constants/path'
+import authApi from '../../apis/auth.api'
 
 export default function Header() {
   const navigate = useNavigate()
   const { isAuthenticated, setIsAuthenticated, setProfile, profile } = useContext(AppContext)
   const logoutMutation = useMutation({
-    mutationFn: LogoutAccount,
+    mutationFn: authApi.LogoutAccount,
     onSuccess: () => {
       setIsAuthenticated(false)
       setProfile(null)
