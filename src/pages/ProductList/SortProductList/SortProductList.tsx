@@ -4,14 +4,16 @@ import { QueryConfig } from '../ProductList'
 import { sortBy, order as orderConstant } from 'src/constants/product'
 import classNames from 'classnames'
 import { ProductListConfig } from 'src/types/product.type'
-import { createSearchParams, useNavigate } from 'react-router-dom'
+import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import path from 'src/constants/path'
+import { omit } from 'lodash'
 
 interface Props {
   queryConfig: QueryConfig
   pageSize: number
 }
 export default function SortProductList({ queryConfig, pageSize }: Props) {
+  const page = Number(queryConfig.page)
   const { sort_by = sortBy.createdAt, order } = queryConfig
   const navigate = useNavigate()
   const isActiveSortBy = (sortByValue: Exclude<ProductListConfig['sort_by'], undefined>) => {
@@ -20,15 +22,27 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
   const handleSort = (sortByValue: Exclude<ProductListConfig['sort_by'], undefined>) => {
     navigate({
       pathname: path.home,
-      search: createSearchParams({
-        ...queryConfig,
-        sort_by: sortByValue
-      }).toString()
+      search: createSearchParams(
+        omit(
+          {
+            ...queryConfig,
+            sort_by: sortByValue
+          },
+          ['order']
+        )
+      ).toString()
     })
   }
 
-  const handlePriceOrder = (orderValue) => {
-    
+  const handlePriceOrder = (orderValue: Exclude<ProductListConfig['order'], undefined>) => {
+    navigate({
+      pathname: path.home,
+      search: createSearchParams({
+        ...queryConfig,
+        sort_by: sortBy.price,
+        order: orderValue
+      }).toString()
+    })
   }
   return (
     <div className='bg-gray-300/40 px-3 py-4'>
@@ -64,39 +78,81 @@ export default function SortProductList({ queryConfig, pageSize }: Props) {
           </button>
           <select
             className={classNames('h-8 bg-white px-4 text-left text-sm capitalize outline-none ', {
-              'bg-orange text-white hover:bg-orange/80': isActiveSortBy(sortBy.price),
+              'bg-orange text-black hover:bg-orange/80': isActiveSortBy(sortBy.price),
               'bg-white text-black hover:bg-slate-100': !isActiveSortBy(sortBy.price)
             })}
             value={order || ''}
-            onChange={}
+            onChange={(event) => handlePriceOrder(event.target.value as Exclude<ProductListConfig['order'], undefined>)}
           >
-            <option value='' disabled>
+            <option className='bg-white text-black' value='' disabled>
               Giá
             </option>
-            <option value={orderConstant.asc}>Giá: Thấp đến cao</option>
-            <option value={orderConstant.desc}>Giá: Cao đến thấp</option>
+            <option value={orderConstant.asc} className='bg-white text-black'>
+              Giá: Thấp đến cao
+            </option>
+            <option value={orderConstant.desc} className='bg-white text-black'>
+              Giá: Cao đến thấp
+            </option>
           </select>
         </div>
         <div className='mt-1 flex items-center'>
           <div className=''>
-            <span className='text-orange'>1</span>
-            <span className=''>/2</span>
+            <span className='text-[13px] text-orange'>{page}</span>
+            <span className='text-[13px]'>/{pageSize}</span>
           </div>
           <div className='ml-2'>
-            <button className='h-8 cursor-not-allowed rounded-bl-sm rounded-tl-sm bg-white/60 px-3 shadow-sm hover:bg-slate-100'>
-              <ChevronLeftOutlinedIcon
-                sx={{
-                  fontSize: '18px'
+            {page === 1 ? (
+              <span className='h-8 cursor-not-allowed rounded-bl-sm rounded-tl-sm bg-white/60 px-3 shadow-sm hover:bg-slate-100'>
+                <ChevronLeftOutlinedIcon
+                  sx={{
+                    fontSize: '18px'
+                  }}
+                />
+              </span>
+            ) : (
+              <Link
+                to={{
+                  pathname: path.home,
+                  search: createSearchParams({
+                    ...queryConfig,
+                    page: (page - 1).toString()
+                  }).toString()
                 }}
-              />
-            </button>
-            <button className='h-8 cursor-not-allowed rounded-br-sm rounded-tr-sm bg-white/60 px-3 shadow-sm hover:bg-slate-100'>
-              <ChevronRightOutlinedIcon
-                sx={{
-                  fontSize: '18px'
+                className='h-8 cursor-pointer rounded-bl-sm rounded-tl-sm bg-white/60 px-3 shadow-sm hover:bg-slate-100'
+              >
+                <ChevronLeftOutlinedIcon
+                  sx={{
+                    fontSize: '18px'
+                  }}
+                />
+              </Link>
+            )}
+            {page === pageSize ? (
+              <span className='h-8 cursor-not-allowed rounded-bl-sm rounded-tl-sm bg-white/60 px-3 shadow-sm hover:bg-slate-100'>
+                <ChevronRightOutlinedIcon
+                  sx={{
+                    fontSize: '18px'
+                  }}
+                />
+              </span>
+            ) : (
+              <Link
+                to={{
+                  pathname: path.home,
+                  search: createSearchParams({
+                    ...queryConfig,
+                    page: (page + 1).toString()
+                  }).toString()
                 }}
-              />
-            </button>
+                className='h-8 cursor-pointer rounded-bl-sm rounded-tl-sm bg-white/60 px-3 shadow-sm hover:bg-slate-100'
+              >
+                <ChevronRightOutlinedIcon
+                  sx={{
+                    fontSize: '18px'
+                  }}
+                />
+              </Link>
+            )}
           </div>
         </div>
       </div>
