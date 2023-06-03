@@ -95,7 +95,7 @@ export default function AsideFilter() {
               .map((_, index) => (
                 <StarOutlinedIcon
                   sx={{
-                    color: 'goldenrod',
+                    color: 'gold',
                     fontSize: '19px',
                     marginRight: '5px'
                   }}
@@ -111,7 +111,7 @@ export default function AsideFilter() {
               .map((_, index) => (
                 <StarOutlineOutlinedIcon
                   sx={{
-                    color: 'goldenrod',
+                    color: 'gold',
                     fontSize: '19px',
                     marginRight: '5px'
                   }}
