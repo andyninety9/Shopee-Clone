@@ -5,12 +5,12 @@ import { QueryConfig } from 'src/pages/ProductList/ProductList'
 
 interface Props {
   queryConfig: QueryConfig
-  setPage: React.Dispatch<React.SetStateAction<number>>
+
   pageSize: number
 }
 
 const RANGE = 2
-export default function Pagination({ queryConfig, setPage, pageSize }: Props) {
+export default function Pagination({ queryConfig, pageSize }: Props) {
   const page = Number(queryConfig.page)
 
   const renderPagination = () => {
