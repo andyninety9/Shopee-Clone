@@ -1,0 +1,46 @@
+import StarOutlinedIcon from '@mui/icons-material/StarOutlined'
+
+export default function ProductRating({ rating }: { rating: number }) {
+  const handleWidth = (order: number) => {
+    if (order <= rating) {
+      return '100%'
+    }
+    if (order > rating && order - rating < 1) {
+      return (rating - Math.floor(rating)) * 100 + '%'
+    }
+    return '0%'
+  }
+  return (
+    <div className='flex items-end text-[11px]'>
+      {Array(5)
+        .fill(0)
+        .map((_, index) => (
+          <div className='relative' key={index}>
+            <div
+              className='absolute left-0 top-0 h-full overflow-hidden'
+              style={{
+                width: handleWidth(index + 1)
+              }}
+            >
+              <StarOutlinedIcon
+                sx={{
+                  color: 'gold',
+                  fontSize: '13px',
+                  marginRight: '3px',
+                  zIndex: '20'
+                }}
+              />
+            </div>
+            <StarOutlinedIcon
+              sx={{
+                color: 'gray',
+                fontSize: '13px',
+                marginRight: '3px',
+                zIndex: '20'
+              }}
+            />
+          </div>
+        ))}
+    </div>
+  )
+}

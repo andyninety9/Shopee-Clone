@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
-import StarOutlinedIcon from '@mui/icons-material/StarOutlined'
 import { Product as ProductType } from 'src/types/product.type'
 import { formatCurrency, formatNumberToSocialStyle } from 'src/utils/utils'
+import ProductRating from 'src/components/ProductRating'
 
 interface Props {
   product: ProductType
@@ -27,45 +27,10 @@ export default function Product({ product }: Props) {
             </div>
           </div>
           <div className='mt-3 flex items-center justify-start'>
-            <div className='flex items-end text-[11px]'>
-              {Array(4)
-                .fill(0)
-                .map((_, index) => (
-                  <StarOutlinedIcon
-                    sx={{
-                      color: 'goldenrod',
-                      fontSize: '13px',
-                      marginRight: '5px'
-                    }}
-                    key={index}
-                  />
-                ))}
-              <div className='relative'>
-                <div
-                  className='absolute left-0 top-0 h-full overflow-hidden'
-                  style={{
-                    width: '50%'
-                  }}
-                >
-                  <StarOutlinedIcon
-                    sx={{
-                      color: 'goldenrod',
-                      fontSize: '13px',
-                      marginRight: '5px',
-                      zIndex: '20'
-                    }}
-                  />
-                </div>
-                <StarOutlinedIcon
-                  sx={{
-                    color: 'gray',
-                    fontSize: '13px',
-                    marginRight: '5px',
-                    zIndex: '20'
-                  }}
-                />
-              </div>
-              Đã bán {formatNumberToSocialStyle(product.sold)}
+            <ProductRating rating={product.rating} />
+            <div className='ml-2 text-[11px]'>
+              <span>Đã bán</span>
+              <span> {formatNumberToSocialStyle(product.sold)}</span>
             </div>
           </div>
           <div className='mt-1 text-[11px]'>Còn {formatNumberToSocialStyle(product.quantity)} sản phẩm</div>
