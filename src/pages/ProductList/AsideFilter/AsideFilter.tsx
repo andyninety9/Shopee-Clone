@@ -15,6 +15,8 @@ import { Controller, useForm } from 'react-hook-form'
 import { Schema, schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { NoUndefinedField } from 'src/types/utils.type'
+import RatingStars from 'src/components/RatingStars'
+import { omit } from 'lodash'
 
 interface Props {
   queryConfig: QueryConfig
@@ -42,8 +44,6 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
   })
 
   const navigate = useNavigate()
-  // const valueForm = watch()
-  // console.log(errors)
 
   const onSunmit = handleSubmit((data) => {
     navigate({
@@ -55,6 +55,14 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
       }).toString()
     })
   })
+
+  const handleRemoveAll = () => {
+    navigate({
+      pathname: path.home,
+      search: createSearchParams(omit(queryConfig, ['price_min', 'price_max', 'rating_filter', 'category'])).toString()
+    })
+  }
+
   return (
     <div className='py-4'>
       <Link
@@ -172,43 +180,12 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
       </div>
       <div className='my-4 h-[1px] bg-gray-300'></div>
       <div className='text-sm'>Đánh giá</div>
-      <ul className='my-3 ml-3'>
-        <li className='py-1'>
-          <Link to='' className='flex items-center text-sm'>
-            {Array(5)
-              .fill(0)
-              .map((_, index) => (
-                <StarOutlinedIcon
-                  sx={{
-                    color: 'gold',
-                    fontSize: '19px',
-                    marginRight: '5px'
-                  }}
-                  key={index}
-                />
-              ))}
-          </Link>
-        </li>
-        <li className='py-1'>
-          <Link to='' className='flex items-center text-sm'>
-            {Array(5)
-              .fill(0)
-              .map((_, index) => (
-                <StarOutlineOutlinedIcon
-                  sx={{
-                    color: 'gold',
-                    fontSize: '19px',
-                    marginRight: '5px'
-                  }}
-                  key={index}
-                />
-              ))}
-            trở lên
-          </Link>
-        </li>
-      </ul>
+      <RatingStars queryConfig={queryConfig} />
       <div className='my-4 h-[1px] bg-gray-300'></div>
-      <Button className='hover:bg-orange-500 w-full rounded-sm bg-orange p-3 text-[14px] font-medium text-white shadow-sm'>
+      <Button
+        onClick={handleRemoveAll}
+        className='hover:bg-orange-500 w-full rounded-sm bg-orange p-3 text-[14px] font-medium text-white shadow-sm'
+      >
         XOÁ TẤT CẢ
       </Button>
     </div>
