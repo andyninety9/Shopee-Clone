@@ -1,25 +1,60 @@
 import TocIcon from '@mui/icons-material/Toc'
-import { Link, createSearchParams } from 'react-router-dom'
+import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import path from 'src/constants/path'
 import ArrowRightIcon from '@mui/icons-material/ArrowRight'
 import { orange } from '@mui/material/colors'
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined'
-import Input from 'src/components/Input'
 import Button from 'src/components/Button'
 import StarOutlinedIcon from '@mui/icons-material/StarOutlined'
 import StarOutlineOutlinedIcon from '@mui/icons-material/StarOutlineOutlined'
 import { QueryConfig } from '../ProductList'
 import { Category } from 'src/types/category.type'
 import classNames from 'classnames'
+import InputNumber from 'src/components/InputNumber'
+import { Controller, useForm } from 'react-hook-form'
+import { Schema, schema } from 'src/utils/rules'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { NoUndefinedField } from 'src/types/utils.type'
 
 interface Props {
   queryConfig: QueryConfig
   categories: Category[]
 }
 
+type FormData = NoUndefinedField<Pick<Schema, 'price_max' | 'price_min'>>
+
+const priceSchema = schema.pick(['price_min', 'price_max'])
+
 export default function AsideFilter({ queryConfig, categories }: Props) {
   const { category } = queryConfig
-  console.log(category, categories)
+  const {
+    control,
+    trigger,
+    handleSubmit,
+    formState: { errors }
+  } = useForm<FormData>({
+    defaultValues: {
+      price_min: '',
+      price_max: ''
+    },
+    resolver: yupResolver(priceSchema),
+    shouldFocusError: false
+  })
+
+  const navigate = useNavigate()
+  // const valueForm = watch()
+  // console.log(errors)
+
+  const onSunmit = handleSubmit((data) => {
+    navigate({
+      pathname: path.home,
+      search: createSearchParams({
+        ...queryConfig,
+        price_max: data.price_max,
+        price_min: data.price_min
+      }).toString()
+    })
+  })
   return (
     <div className='py-4'>
       <Link
@@ -85,24 +120,51 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
       <div className='my-4 h-[1px] bg-gray-300'></div>
       <div className='my-5'>
         <div className='text-[15px]'>Khoảng giá</div>
-        <form className='mt-2'>
+        <form className='mt-2' onSubmit={onSunmit}>
           <div className='flex items-start'>
-            <Input
-              placeholder='Từ'
-              type='text'
-              className='grow'
-              name='from'
-              classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus: shadow-sm'
+            <Controller
+              control={control}
+              name='price_min'
+              render={({ field }) => {
+                return (
+                  <InputNumber
+                    classNameError='hidden'
+                    placeholder='Từ'
+                    type='text'
+                    className='grow'
+                    classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus: shadow-sm'
+                    {...field}
+                    onChange={(e) => {
+                      field.onChange(e)
+                      trigger('price_max')
+                    }}
+                  />
+                )
+              }}
             />
             <div className='mx-2 mt-2 shrink-0'>-</div>
-            <Input
-              placeholder='Đến'
-              type='text'
-              className='grow'
-              name='from'
-              classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus: shadow-sm'
+            <Controller
+              control={control}
+              name='price_max'
+              render={({ field }) => {
+                return (
+                  <InputNumber
+                    classNameError='hidden'
+                    placeholder='Đến'
+                    type='text'
+                    className='grow'
+                    classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus: shadow-sm'
+                    {...field}
+                    onChange={(e) => {
+                      field.onChange(e)
+                      trigger('price_min')
+                    }}
+                  />
+                )
+              }}
             />
           </div>
+          <div className='mt-1 min-h-[1.25rem] text-center text-sm text-red-600'>{errors.price_min?.message}</div>
           <Button className='hover:bg-orange-300 w-full rounded-sm bg-orange p-2 text-[14px] font-medium text-white shadow-sm'>
             ÁP DỤNG
           </Button>

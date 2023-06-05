@@ -13,6 +13,8 @@ import { useContext } from 'react'
 import Button from 'src/components/Button'
 import authApi from '../../apis/auth.api'
 
+type FormData = Pick<Schema, 'email' | 'password' | 'confirm_password'>
+const registerSchema = schema.pick(['email', 'password', 'confirm_password'])
 export default function Register() {
   const { setIsAuthenticated, setProfile } = useContext(AppContext)
   const {
@@ -20,10 +22,10 @@ export default function Register() {
     register,
     handleSubmit,
     formState: { errors }
-  } = useForm<Schema>({ resolver: yupResolver(schema) })
+  } = useForm<FormData>({ resolver: yupResolver(registerSchema) })
   const navigate = useNavigate()
   const registerAccountMutation = useMutation({
-    mutationFn: (body: Omit<Schema, 'confirm_password'>) => authApi.registerAccount(body)
+    mutationFn: (body: Omit<FormData, 'confirm_password'>) => authApi.registerAccount(body)
   })
   const onSubmit = handleSubmit((data) => {
     const body = omit(data, ['confirm_password'])
@@ -35,12 +37,12 @@ export default function Register() {
         toast.success('Đăng nhập thành công')
       },
       onError: (error) => {
-        if (isAxiosUnprocessableEntityError<ErrorResponse<Omit<Schema, 'confirm_password'>>>(error)) {
+        if (isAxiosUnprocessableEntityError<ErrorResponse<Omit<FormData, 'confirm_password'>>>(error)) {
           const formError = error.response?.data.data
           if (formError) {
             Object.keys(formError).forEach((key) => {
-              setError(key as keyof Omit<Schema, 'confirm_password'>, {
-                message: formError[key as keyof Omit<Schema, 'confirm_password'>],
+              setError(key as keyof Omit<FormData, 'confirm_password'>, {
+                message: formError[key as keyof Omit<FormData, 'confirm_password'>],
                 type: 'Server'
               })
             })

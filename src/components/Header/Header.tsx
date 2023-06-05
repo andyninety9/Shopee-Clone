@@ -12,6 +12,7 @@ import { Fragment, useContext } from 'react'
 import { toast } from 'react-toastify'
 import path from 'src/constants/path'
 import authApi from '../../apis/auth.api'
+import { stringAvatar, stringToColor } from 'src/utils/utils'
 
 export default function Header() {
   const navigate = useNavigate()
@@ -99,17 +100,21 @@ export default function Header() {
               </div>
             }
           >
-            <Avatar
-              sx={{
-                width: '24px',
-                height: '24px',
-                marginRight: '8px',
-                flexShrink: '0'
-              }}
-              src=''
-              alt=''
-            />
-            <span>{profile?.email}</span>
+            {profile ? (
+              <Fragment>
+                <Avatar {...stringAvatar(`${profile?.email}`)} src='' alt='' />
+                <span>{profile?.email}</span>
+              </Fragment>
+            ) : (
+              <Avatar
+                sx={{
+                  width: '25px',
+                  height: '25px',
+                  marginRight: '8px',
+                  flexShrink: '0'
+                }}
+              />
+            )}
           </Popover>
         </div>
         <div className='mt-2 grid grid-cols-12 items-center gap-4'>
