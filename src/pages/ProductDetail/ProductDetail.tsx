@@ -10,7 +10,7 @@ import AddIcon from '@mui/icons-material/Add'
 import InputNumber from 'src/components/InputNumber'
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart'
 import DOMPurify from 'dompurify'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Product } from 'src/types/product.type'
 
 export default function ProductDetail() {
@@ -22,6 +22,7 @@ export default function ProductDetail() {
   const [currentIndexImages, setCurrentIndexImages] = useState([0, 5])
   const [activeImage, setActiveImage] = useState('')
   const product = productDetailData?.data.data
+  const imageRef = useRef<HTMLImageElement>(null)
   const currentImages = useMemo(
     () => (product ? product.images.slice(...currentIndexImages) : []),
     [product, currentIndexImages]
@@ -49,6 +50,29 @@ export default function ProductDetail() {
     setActiveImage(img)
   }
 
+  const handleZoom = (event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    const rect = event.currentTarget.getBoundingClientRect()
+    const image = imageRef.current as HTMLImageElement
+    const { naturalHeight, naturalWidth } = image
+    //Cách 1: Lấy offsetX và offsetY đơn giản khi chúng ta đã xử lý được bubble event
+    const { offsetX, offsetY } = event.nativeEvent
+
+    // Cách 2: lấy offsetX và offsetY khi chúng ta không xử lý được bubble event
+    const top = offsetY * (1 - naturalHeight / rect.height)
+    const left = offsetX * (1 - naturalWidth / rect.width)
+    image.style.width = naturalWidth + 'px'
+    image.style.height = naturalHeight + 'px'
+    image.style.maxWidth = 'unset'
+    image.style.top = top + 'px'
+    image.style.left = left + 'px'
+
+    //Event Bubble sử dụng pointer-events-none để ngăn chặn
+  }
+
+  const handleRemoveZoom = () => {
+    imageRef.current?.removeAttribute('style')
+  }
+
   if (!product) return null
   return (
     <div className='bg-gray-200 py-6'>
@@ -56,11 +80,16 @@ export default function ProductDetail() {
         <div className='bg-white p-4 shadow'>
           <div className='grid grid-cols-12 gap-9'>
             <div className='col-span-5'>
-              <div className='relative w-full pt-[100%] shadow'>
+              <div
+                className='relative w-full cursor-zoom-in overflow-hidden pt-[100%] shadow'
+                onMouseMove={handleZoom}
+                onMouseLeave={handleRemoveZoom}
+              >
                 <img
                   src={activeImage}
                   alt={product.name}
-                  className='absolute left-0 top-0 h-full w-full bg-white object-cover'
+                  className='pointer-events-none absolute left-0 top-0 h-full w-full bg-white object-cover'
+                  ref={imageRef}
                 />
                 <div className='relative mt-4 grid grid-cols-5 gap-1'>
                   <button
@@ -82,6 +111,7 @@ export default function ProductDetail() {
                           src={img}
                           alt={product.name}
                           className='absolute left-0 top-0 h-full w-full bg-white object-cover'
+                          //   ref={imageRef}
                         />
                         {isActive && <div className='absolute inset-0 border-2 border-orange'></div>}
                       </div>

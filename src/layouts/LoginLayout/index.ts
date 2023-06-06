@@ -1,3 +1,3 @@
-import LoginRLayout from "./LoginLayout";
+import LoginRLayout from './LoginLayout'
 
 export default LoginRLayout
