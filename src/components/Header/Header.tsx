@@ -2,7 +2,7 @@ import LanguageIcon from '@mui/icons-material/Language'
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { grey } from '@mui/material/colors'
 import Avatar from '@mui/material/Avatar'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import SearchIcon from '@mui/icons-material/Search'
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
 import Popover from '../Popover'
@@ -13,8 +13,24 @@ import { toast } from 'react-toastify'
 import path from 'src/constants/path'
 import authApi from '../../apis/auth.api'
 import { stringAvatar, stringToColor } from 'src/utils/utils'
+import useQueryConfig from 'src/hooks/useQueryConfig'
+import { useForm } from 'react-hook-form'
+import { Schema, schema } from 'src/utils/rules'
+import { yupResolver } from '@hookform/resolvers/yup'
+import { omit } from 'lodash'
+
+type FormData = Pick<Schema, 'name'>
+
+const nameSchema = schema.pick(['name'])
 
 export default function Header() {
+  const queryConfig = useQueryConfig()
+  const { register, handleSubmit } = useForm({
+    defaultValues: {
+      name: ''
+    },
+    resolver: yupResolver(nameSchema)
+  })
   const navigate = useNavigate()
   const { isAuthenticated, setIsAuthenticated, setProfile, profile } = useContext(AppContext)
   const logoutMutation = useMutation({
@@ -29,6 +45,25 @@ export default function Header() {
   const handleLogout = () => {
     logoutMutation.mutate()
   }
+
+  const onSubmitSearch = handleSubmit((data) => {
+    const config = queryConfig.order
+      ? omit(
+          {
+            ...queryConfig,
+            name: data.name
+          },
+          ['order', 'sort_by']
+        )
+      : {
+          ...queryConfig,
+          name: data.name
+        }
+    navigate({
+      pathname: path.home,
+      search: createSearchParams(config).toString()
+    })
+  })
   return (
     <div className='overflow-hidden bg-gradient-RedOrange pb-2 pt-2'>
       <div className='container'>
@@ -125,12 +160,13 @@ export default function Header() {
               </g>
             </svg>
           </Link>
-          <form className='col-span-9 justify-center'>
+          <form className='col-span-9 justify-center' onSubmit={onSubmitSearch}>
             <div className='flex h-9 w-[200px] translate-x-[50px] rounded-md bg-white p-1 lg:w-full lg:-translate-x-0'>
               <input
                 type='text'
-                name='search'
                 className='flex-grow border-none bg-transparent px-3 py-2 text-black outline-none'
+                placeholder='Ship đâu cũng ship!'
+                {...register('name')}
               />
               <button className='h-full min-w-[40px] flex-shrink-0 -translate-x-[122%] items-center rounded-md bg-orange hover:opacity-90 lg:translate-x-0 lg:px-6'>
                 <SearchIcon
