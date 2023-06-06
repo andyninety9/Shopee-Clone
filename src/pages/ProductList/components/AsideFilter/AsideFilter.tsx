@@ -5,9 +5,6 @@ import ArrowRightIcon from '@mui/icons-material/ArrowRight'
 import { orange } from '@mui/material/colors'
 import FilterAltOutlinedIcon from '@mui/icons-material/FilterAltOutlined'
 import Button from 'src/components/Button'
-import StarOutlinedIcon from '@mui/icons-material/StarOutlined'
-import StarOutlineOutlinedIcon from '@mui/icons-material/StarOutlineOutlined'
-import { QueryConfig } from '../../ProductList'
 import { Category } from 'src/types/category.type'
 import classNames from 'classnames'
 import InputNumber from 'src/components/InputNumber'
@@ -17,6 +14,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { NoUndefinedField } from 'src/types/utils.type'
 import RatingStars from 'src/components/RatingStars'
 import { omit } from 'lodash'
+import { QueryConfig } from 'src/hooks/useQueryConfig'
 
 interface Props {
   queryConfig: QueryConfig
