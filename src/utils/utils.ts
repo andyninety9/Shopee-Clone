@@ -19,6 +19,8 @@ export function formatNumberToSocialStyle(value: number) {
     .toLowerCase()
 }
 
+export const rateSale = (original: number, sale: number) => Math.round(((original - sale) / original) * 100) + '%'
+
 export function stringToColor(string: string) {
   let hash = 0
   let i

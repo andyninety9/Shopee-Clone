@@ -1,6 +1,15 @@
 import StarOutlinedIcon from '@mui/icons-material/StarOutlined'
+import { SxProps, Theme } from '@mui/material'
 
-export default function ProductRating({ rating }: { rating: number }) {
+export default function ProductRating({
+  rating,
+  activeClassname = { color: 'gold', fontSize: '13px', marginRight: '3px', zIndex: '20' },
+  nonActiveClassname = { color: 'gray', fontSize: '13px', marginRight: '3px', zIndex: '20' }
+}: {
+  rating: number
+  activeClassname?: SxProps<Theme> | undefined
+  nonActiveClassname?: SxProps<Theme> | undefined
+}) {
   const handleWidth = (order: number) => {
     if (order <= rating) {
       return '100%'
@@ -22,23 +31,9 @@ export default function ProductRating({ rating }: { rating: number }) {
                 width: handleWidth(index + 1)
               }}
             >
-              <StarOutlinedIcon
-                sx={{
-                  color: 'gold',
-                  fontSize: '13px',
-                  marginRight: '3px',
-                  zIndex: '20'
-                }}
-              />
+              <StarOutlinedIcon sx={activeClassname} />
             </div>
-            <StarOutlinedIcon
-              sx={{
-                color: 'gray',
-                fontSize: '13px',
-                marginRight: '3px',
-                zIndex: '20'
-              }}
-            />
+            <StarOutlinedIcon sx={nonActiveClassname} />
           </div>
         ))}
     </div>
