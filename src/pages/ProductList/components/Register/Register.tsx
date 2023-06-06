@@ -11,7 +11,7 @@ import { toast } from 'react-toastify'
 import { AppContext } from 'src/contexts/app.context'
 import { useContext } from 'react'
 import Button from 'src/components/Button'
-import authApi from '../../apis/auth.api'
+import authApi from '../../../../apis/auth.api'
 
 type FormData = Pick<Schema, 'email' | 'password' | 'confirm_password'>
 const registerSchema = schema.pick(['email', 'password', 'confirm_password'])
