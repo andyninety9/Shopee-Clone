@@ -12,6 +12,9 @@ import { Product as ProductType, ProductListConfig } from 'src/types/product.typ
 import Product from '../ProductList/components/Product'
 import QuantityController from 'src/components/QuantityController'
 import purchaseApi from 'src/apis/purchase.type'
+import { queryClient } from 'src/main'
+import { purchaseStatus } from 'src/constants/purchase'
+import { toast } from 'react-toastify'
 
 export default function ProductDetail() {
   const [buyCount, setBuyCount] = useState(1)
@@ -91,7 +94,15 @@ export default function ProductDetail() {
   }
 
   const addToCart = () => {
-    addToCardMutation.mutate({ buy_count: buyCount, product_id: product?._id as string })
+    addToCardMutation.mutate(
+      { buy_count: buyCount, product_id: product?._id as string },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: ['purchase', { status: purchaseStatus.inCart }] }),
+            toast.success('Đã thêm sản phẩm vào giỏ hàng')
+        }
+      }
+    )
   }
 
   if (!product) return null

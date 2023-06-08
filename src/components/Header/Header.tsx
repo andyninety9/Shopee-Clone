@@ -6,26 +6,30 @@ import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import SearchIcon from '@mui/icons-material/Search'
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
 import Popover from '../Popover'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { AppContext } from 'src/contexts/app.context'
 import { Fragment, useContext } from 'react'
 import { toast } from 'react-toastify'
 import path from 'src/constants/path'
 import authApi from '../../apis/auth.api'
-import { stringAvatar, stringToColor } from 'src/utils/utils'
+import { formatCurrency, stringAvatar } from 'src/utils/utils'
 import useQueryConfig from 'src/hooks/useQueryConfig'
 import { useForm } from 'react-hook-form'
 import { Schema, schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { omit } from 'lodash'
+import { purchaseStatus } from 'src/constants/purchase'
+import purchaseApi from 'src/apis/purchase.type'
+import HighlightOffIcon from '@mui/icons-material/HighlightOff'
 
 type FormData = Pick<Schema, 'name'>
-
 const nameSchema = schema.pick(['name'])
+
+const MAX_PURCHASES = 5
 
 export default function Header() {
   const queryConfig = useQueryConfig()
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit } = useForm<FormData>({
     defaultValues: {
       name: ''
     },
@@ -45,6 +49,14 @@ export default function Header() {
   const handleLogout = () => {
     logoutMutation.mutate()
   }
+
+  const { data: purchasesInCartData } = useQuery({
+    queryKey: ['purchase', { status: purchaseStatus.inCart }],
+    queryFn: () => purchaseApi.getPurchases({ status: purchaseStatus.inCart })
+  })
+
+  const purchasesInCart = purchasesInCartData?.data.data
+  // console.log(purchasesInCart)
 
   const onSubmitSearch = handleSubmit((data) => {
     const config = queryConfig.order
@@ -180,89 +192,57 @@ export default function Header() {
           <Popover
             renderPopover={
               <div className='relative max-w-[400px] rounded-sm border border-gray-200 bg-white p-2 text-[13px] shadow-md'>
-                <div className=''>
-                  <span className='opacity-60'>Sản phẩm mới thêm</span>
-                  <div className='mt-5'>
-                    <div className='mt-4 flex cursor-pointer items-center'>
-                      <div className='flex-shrink-0'>
-                        <img
-                          src='https://images.unsplash.com/photo-1661956602153-23384936a1d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxMXx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1600&q=60'
-                          alt='image1'
-                          className='h-11 w-11 object-cover'
-                        />
-                      </div>
-                      <div className='ml-2 flex-grow'>
-                        <div className='max-w-[200px] truncate'>
-                          Apple Ipad Pro M2 - 256gb (2022) - Bảo hành chính hãng
-                        </div>
-                      </div>
-                      <div className='ml-2 flex-shrink-0'>
-                        <span className='text-orange'>28.000.000</span>
-                      </div>
-                    </div>
-                    <div className='mt-4 flex cursor-pointer items-center'>
-                      <div className='flex-shrink-0'>
-                        <img
-                          src='https://images.unsplash.com/photo-1661956602153-23384936a1d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxMXx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1600&q=60'
-                          alt='image1'
-                          className='h-11 w-11 object-cover'
-                        />
-                      </div>
-                      <div className='ml-2 flex-grow'>
-                        <div className='max-w-[200px] truncate'>
-                          Apple Ipad Pro M2 - 256gb (2022) - Bảo hành chính hãng
-                        </div>
-                      </div>
-                      <div className='ml-2 flex-shrink-0'>
-                        <span className='text-orange'>28.000.000</span>
+                {purchasesInCart ? (
+                  <Fragment>
+                    <div className=''>
+                      <span className='opacity-60'>Sản phẩm mới thêm</span>
+                      <div className='mt-5'>
+                        {purchasesInCart.slice(0, MAX_PURCHASES).map((purchase) => (
+                          <div
+                            className='mt-4 flex cursor-pointer items-center pr-2 hover:bg-slate-100'
+                            key={purchase._id}
+                          >
+                            <div className='flex-shrink-0'>
+                              <img
+                                src={purchase.product.image}
+                                alt={purchase.product.name}
+                                className='h-11 w-11 object-cover'
+                              />
+                            </div>
+                            <div className='ml-2 flex-grow'>
+                              <div className='max-w-[200px] truncate'>{purchase.product.name}</div>
+                            </div>
+                            <div className='ml-2 flex-shrink-0'>
+                              <span className='text-orange'>{formatCurrency(purchase.product.price)}</span>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                    <div className='mt-4 flex cursor-pointer items-center'>
-                      <div className='flex-shrink-0'>
-                        <img
-                          src='https://images.unsplash.com/photo-1661956602153-23384936a1d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxMXx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1600&q=60'
-                          alt='image1'
-                          className='h-11 w-11 object-cover'
-                        />
+                    <div className='mt-3 flex items-end justify-between'>
+                      <div className='opacity-60'>
+                        Thêm {purchasesInCart.length > MAX_PURCHASES ? purchasesInCart.length - MAX_PURCHASES : ''} sản
+                        phẩm vào giỏ hàng
                       </div>
-                      <div className='ml-2 flex-grow'>
-                        <div className='max-w-[200px] truncate'>
-                          Apple Ipad Pro M2 - 256gb (2022) - Bảo hành chính hãng
-                        </div>
-                      </div>
-                      <div className='ml-2 flex-shrink-0'>
-                        <span className='text-orange'>28.000.000</span>
-                      </div>
+                      <button className='rounded-sm bg-orange px-3 py-2 text-white'>Xem giỏ hàng</button>
                     </div>
-                    <div className='mt-4 flex cursor-pointer items-center'>
-                      <div className='flex-shrink-0'>
-                        <img
-                          src='https://images.unsplash.com/photo-1661956602153-23384936a1d3?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxlZGl0b3JpYWwtZmVlZHwxMXx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1600&q=60'
-                          alt='image1'
-                          className='h-11 w-11 object-cover'
-                        />
-                      </div>
-                      <div className='ml-2 flex-grow'>
-                        <div className='max-w-[200px] truncate'>
-                          Apple Ipad Pro M2 - 256gb (2022) - Bảo hành chính hãng
-                        </div>
-                      </div>
-                      <div className='ml-2 flex-shrink-0'>
-                        <span className='text-orange'>28.000.000</span>
-                      </div>
-                    </div>
+                  </Fragment>
+                ) : (
+                  <div className='relative flex max-w-[400px] flex-col items-center justify-center rounded-sm border border-gray-200 bg-white p-2 text-[13px] shadow-md'>
+                    <HighlightOffIcon
+                      sx={{
+                        fontSize: '50px',
+                        color: '#eee'
+                      }}
+                    />
+                    <div className='text-lg font-medium capitalize text-gray-500'>Không có sản phẩm nào</div>
                   </div>
-                </div>
-
-                <div className='flex items-end justify-between'>
-                  <div className='opacity-60'>Đã thêm 5 sản phẩm</div>
-                  <button className='rounded-sm bg-orange px-3 py-2 text-white'>Xem giỏ hàng</button>
-                </div>
+                )}
               </div>
             }
             className='col-span-1 justify-self-end'
           >
-            <Link to={path.home} className=''>
+            <Link to={path.home} className='relative'>
               <ShoppingCartOutlinedIcon
                 sx={{
                   color: 'white',
@@ -270,6 +250,9 @@ export default function Header() {
                   cursor: 'pointer'
                 }}
               />
+              <span className='absolute right-0 top-[0] flex h-4 w-4 -translate-y-2 translate-x-2 items-center justify-center rounded-full bg-white text-[12px] font-light text-black'>
+                {purchasesInCart?.length}
+              </span>
             </Link>
           </Popover>
         </div>
