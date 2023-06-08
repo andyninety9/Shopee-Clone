@@ -14,15 +14,17 @@ import authApi from '../../apis/auth.api'
 
 type FormData = Pick<Schema, 'email' | 'password'>
 const loginSchema = schema.pick(['email', 'password'])
+
 export default function Login() {
   const { setIsAuthenticated, setProfile } = useContext(AppContext)
+  const navigate = useNavigate()
   const {
     setError,
     register,
     handleSubmit,
     formState: { errors }
   } = useForm<FormData>({ resolver: yupResolver(loginSchema) })
-  const navigate = useNavigate()
+
   const loginAccountMutation = useMutation({
     mutationFn: (body: Omit<FormData, 'confirm_password'>) => authApi.LoginAccount(body)
   })
@@ -31,6 +33,7 @@ export default function Login() {
     loginAccountMutation.mutate(data, {
       onSuccess: (data) => {
         setIsAuthenticated(true)
+        console.log(data.data.data.user)
         setProfile(data.data.data.user)
         navigate('/')
         toast.success('Đăng nhập thành công')

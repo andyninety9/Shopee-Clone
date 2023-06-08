@@ -1,4 +1,4 @@
-import axios, { type AxiosInstance } from 'axios'
+import axios, { AxiosError, type AxiosInstance } from 'axios'
 import { toast } from 'react-toastify'
 import HttpStatusCode from 'src/constants/httpStatusCode.enum'
 import { AuthResponse } from 'src/types/auth.type'
@@ -32,10 +32,12 @@ class Http {
     // Add a response interceptor
     this.instance.interceptors.response.use(
       (response) => {
+        console.log('response:', response)
         const { url } = response.config
         if (url === path.login || url === path.register) {
           const data = response.data as AuthResponse
           this.accessToken = data.data.access_token
+          // console.log(this.accessToken)
           setAccessTokenToLS(this.accessToken)
           setProfileToLS(data.data.user)
         } else if (url === path.logout) {
@@ -44,13 +46,14 @@ class Http {
         }
         return response
       },
-      function (error) {
-        // Any status codes that falls outside the range of 2xx cause this function to trigger
-        // Do something with response error
+      function (error: AxiosError) {
         if (error.response?.status !== HttpStatusCode.UnprocessableEntity) {
           const data: any | undefined = error.response?.data
-          const message = data.message || error.message
+          const message = data?.message || error.message
           toast.error(message)
+        }
+        if (error.response?.status === HttpStatusCode.Unauthorized) {
+          clearLS()
         }
         return Promise.reject(error)
       }

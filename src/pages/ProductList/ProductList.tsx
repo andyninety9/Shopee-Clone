@@ -23,7 +23,8 @@ export default function ProductList() {
     queryFn: () => {
       return categoryApi.getCategories()
     },
-    keepPreviousData: true
+    keepPreviousData: true,
+    staleTime: 3 * 60 * 1000
   })
 
   return (
