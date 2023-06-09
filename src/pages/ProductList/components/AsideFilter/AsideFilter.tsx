@@ -15,6 +15,7 @@ import { NoUndefinedField } from 'src/types/utils.type'
 import RatingStars from 'src/components/RatingStars'
 import { omit } from 'lodash'
 import { QueryConfig } from 'src/hooks/useQueryConfig'
+import InputV2 from 'src/components/InputV2'
 
 interface Props {
   queryConfig: QueryConfig
@@ -128,45 +129,29 @@ export default function AsideFilter({ queryConfig, categories }: Props) {
         <div className='text-[15px]'>Khoảng giá</div>
         <form className='mt-2' onSubmit={onSunmit}>
           <div className='flex items-start'>
-            <Controller
-              control={control}
+            <InputV2
               name='price_min'
-              render={({ field }) => {
-                return (
-                  <InputNumber
-                    classNameError='hidden'
-                    placeholder='Từ'
-                    type='text'
-                    className='grow'
-                    classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus: shadow-sm'
-                    {...field}
-                    onChange={(e) => {
-                      field.onChange(e)
-                      trigger('price_max')
-                    }}
-                  />
-                )
+              control={control}
+              classNameError='hidden'
+              placeholder='Từ'
+              type='number'
+              className='grow'
+              classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus: shadow-sm'
+              onChange={() => {
+                trigger('price_max')
               }}
             />
             <div className='mx-2 mt-2 shrink-0'>-</div>
-            <Controller
-              control={control}
+            <InputV2
               name='price_max'
-              render={({ field }) => {
-                return (
-                  <InputNumber
-                    classNameError='hidden'
-                    placeholder='Đến'
-                    type='text'
-                    className='grow'
-                    classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus: shadow-sm'
-                    {...field}
-                    onChange={(e) => {
-                      field.onChange(e)
-                      trigger('price_min')
-                    }}
-                  />
-                )
+              control={control}
+              classNameError='hidden'
+              placeholder='Đến'
+              type='number'
+              className='grow'
+              classNameInput='p-1 w-full outline-none border border-gray-300 focus:border-gray-500 rounded-sm focus: shadow-sm'
+              onChange={() => {
+                trigger('price_min')
               }}
             />
           </div>

@@ -4,7 +4,6 @@ import { grey } from '@mui/material/colors'
 import Avatar from '@mui/material/Avatar'
 import { Link, createSearchParams, useNavigate } from 'react-router-dom'
 import SearchIcon from '@mui/icons-material/Search'
-import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined'
 import Popover from '../Popover'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { AppContext } from 'src/contexts/app.context'
@@ -18,9 +17,14 @@ import { useForm } from 'react-hook-form'
 import { Schema, schema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { omit } from 'lodash'
-import { purchaseStatus } from 'src/constants/purchase'
+import { purchasesStatus } from 'src/constants/purchase'
 import purchaseApi from 'src/apis/purchase.type'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff'
+// eslint-disable-next-line import/named
+import Badge, { BadgeProps } from '@mui/material/Badge'
+import { styled } from '@mui/material/styles'
+import IconButton from '@mui/material/IconButton'
+import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
 
 type FormData = Pick<Schema, 'name'>
 const nameSchema = schema.pick(['name'])
@@ -51,8 +55,8 @@ export default function Header() {
   }
 
   const { data: purchasesInCartData } = useQuery({
-    queryKey: ['purchase', { status: purchaseStatus.inCart }],
-    queryFn: () => purchaseApi.getPurchases({ status: purchaseStatus.inCart })
+    queryKey: ['purchase', { status: purchasesStatus.inCart }],
+    queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart })
   })
 
   const purchasesInCart = purchasesInCartData?.data.data
@@ -76,6 +80,15 @@ export default function Header() {
       search: createSearchParams(config).toString()
     })
   })
+
+  const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
+    '& .MuiBadge-badge': {
+      right: -4,
+      top: 2,
+      border: `1px solid ${theme.palette.background.paper}`,
+      padding: '0 4px'
+    }
+  }))
   return (
     <div className='overflow-hidden bg-gradient-RedOrange pb-2 pt-2'>
       <div className='container'>
@@ -235,7 +248,7 @@ export default function Header() {
                         color: '#eee'
                       }}
                     />
-                    <div className='text-lg font-medium capitalize text-gray-500'>Không có sản phẩm nào</div>
+                    <div className='text-md font-light capitalize text-gray-500'>Không có sản phẩm nào</div>
                   </div>
                 )}
               </div>
@@ -243,16 +256,17 @@ export default function Header() {
             className='col-span-1 justify-self-end'
           >
             <Link to={path.home} className='relative'>
-              <ShoppingCartOutlinedIcon
-                sx={{
-                  color: 'white',
-                  fontSize: '26px',
-                  cursor: 'pointer'
-                }}
-              />
-              <span className='absolute right-0 top-[0] flex h-4 w-4 -translate-y-2 translate-x-2 items-center justify-center rounded-full bg-white text-[12px] font-light text-black'>
-                {purchasesInCart?.length}
-              </span>
+              <IconButton aria-label='cart'>
+                <StyledBadge badgeContent={purchasesInCart?.length} color='secondary'>
+                  <ShoppingCartIcon
+                    sx={{
+                      color: 'white',
+                      fontSize: '26px',
+                      cursor: 'pointer'
+                    }}
+                  />
+                </StyledBadge>
+              </IconButton>
             </Link>
           </Popover>
         </div>

@@ -13,7 +13,7 @@ import Product from '../ProductList/components/Product'
 import QuantityController from 'src/components/QuantityController'
 import purchaseApi from 'src/apis/purchase.type'
 import { queryClient } from 'src/main'
-import { purchaseStatus } from 'src/constants/purchase'
+import { purchasesStatus } from 'src/constants/purchase'
 import { toast } from 'react-toastify'
 
 export default function ProductDetail() {
@@ -98,7 +98,7 @@ export default function ProductDetail() {
       { buy_count: buyCount, product_id: product?._id as string },
       {
         onSuccess: () => {
-          queryClient.invalidateQueries({ queryKey: ['purchase', { status: purchaseStatus.inCart }] }),
+          queryClient.invalidateQueries({ queryKey: ['purchase', { status: purchasesStatus.inCart }] }),
             toast.success('Đã thêm sản phẩm vào giỏ hàng')
         }
       }
