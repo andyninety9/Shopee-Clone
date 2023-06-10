@@ -10,7 +10,7 @@ function App() {
   return (
     <div>
       {routeElement}
-      <ToastContainer autoClose={1000} />
+      <ToastContainer autoClose={1000} position='top-center' />
     </div>
   )
 }

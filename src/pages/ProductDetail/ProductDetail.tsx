@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { useParams } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import productApi from 'src/apis/product.api'
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos'
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos'
@@ -15,9 +15,11 @@ import purchaseApi from 'src/apis/purchase.type'
 import { queryClient } from 'src/main'
 import { purchasesStatus } from 'src/constants/purchase'
 import { toast } from 'react-toastify'
+import path from 'src/constants/path'
 
 export default function ProductDetail() {
   const [buyCount, setBuyCount] = useState(1)
+  const navigate = useNavigate()
   const { nameId } = useParams()
   const id = getIdFromNameId(nameId as string)
   const { data: productDetailData } = useQuery({
@@ -103,6 +105,16 @@ export default function ProductDetail() {
         }
       }
     )
+  }
+
+  const buyNow = async () => {
+    const res = await addToCardMutation.mutateAsync({ buy_count: buyCount, product_id: product?._id as string })
+    const purchase = res.data.data
+    navigate(path.cart, {
+      state: {
+        purchaseId: purchase._id
+      }
+    })
   }
 
   if (!product) return null
@@ -224,7 +236,10 @@ export default function ProductDetail() {
                   />
                   Thêm vào giỏ hàng
                 </button>
-                <button className='flex h-12 items-center justify-center rounded-sm bg-orange px-5 capitalize text-white shadow-sm hover:bg-orange/90'>
+                <button
+                  onClick={buyNow}
+                  className='flex h-12 items-center justify-center rounded-sm bg-orange px-5 capitalize text-white shadow-sm hover:bg-orange/90'
+                >
                   Mua ngay
                 </button>
               </div>

@@ -1,22 +1,11 @@
-import LanguageIcon from '@mui/icons-material/Language'
-import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
-import { grey } from '@mui/material/colors'
-import Avatar from '@mui/material/Avatar'
-import { Link, createSearchParams, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import SearchIcon from '@mui/icons-material/Search'
 import Popover from '../Popover'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useQuery } from '@tanstack/react-query'
 import { AppContext } from 'src/contexts/app.context'
 import { Fragment, useContext } from 'react'
-import { toast } from 'react-toastify'
 import path from 'src/constants/path'
-import authApi from '../../apis/auth.api'
-import { formatCurrency, stringAvatar } from 'src/utils/utils'
-import useQueryConfig from 'src/hooks/useQueryConfig'
-import { useForm } from 'react-hook-form'
-import { Schema, schema } from 'src/utils/rules'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { omit } from 'lodash'
+import { formatCurrency } from 'src/utils/utils'
 import { purchasesStatus } from 'src/constants/purchase'
 import purchaseApi from 'src/apis/purchase.type'
 import HighlightOffIcon from '@mui/icons-material/HighlightOff'
@@ -25,36 +14,14 @@ import Badge, { BadgeProps } from '@mui/material/Badge'
 import { styled } from '@mui/material/styles'
 import IconButton from '@mui/material/IconButton'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
-import { queryClient } from 'src/main'
-
-type FormData = Pick<Schema, 'name'>
-const nameSchema = schema.pick(['name'])
+import NavHeader from 'src/pages/ProductList/components/NavHeader'
+import useSearchProducts from '../../hooks/useSearchProducts'
 
 const MAX_PURCHASES = 5
 
 export default function Header() {
-  const queryConfig = useQueryConfig()
-  const { register, handleSubmit } = useForm<FormData>({
-    defaultValues: {
-      name: ''
-    },
-    resolver: yupResolver(nameSchema)
-  })
-  const navigate = useNavigate()
-  const { isAuthenticated, setIsAuthenticated, setProfile, profile } = useContext(AppContext)
-  const logoutMutation = useMutation({
-    mutationFn: authApi.LogoutAccount,
-    onSuccess: () => {
-      setIsAuthenticated(false)
-      setProfile(null)
-      queryClient.removeQueries({ queryKey: ['purchase', { status: purchasesStatus.inCart }] })
-      navigate('/')
-      toast.success('Đăng xuất thành công')
-    }
-  })
-  const handleLogout = () => {
-    logoutMutation.mutate()
-  }
+  const { isAuthenticated } = useContext(AppContext)
+  const { onSubmitSearch, register } = useSearchProducts()
 
   const { data: purchasesInCartData } = useQuery({
     queryKey: ['purchase', { status: purchasesStatus.inCart }],
@@ -63,26 +30,6 @@ export default function Header() {
   })
 
   const purchasesInCart = purchasesInCartData?.data.data
-  // console.log(purchasesInCart)
-
-  const onSubmitSearch = handleSubmit((data) => {
-    const config = queryConfig.order
-      ? omit(
-          {
-            ...queryConfig,
-            name: data.name
-          },
-          ['order', 'sort_by']
-        )
-      : {
-          ...queryConfig,
-          name: data.name
-        }
-    navigate({
-      pathname: path.home,
-      search: createSearchParams(config).toString()
-    })
-  })
 
   const StyledBadge = styled(Badge)<BadgeProps>(({ theme }) => ({
     '& .MuiBadge-badge': {
@@ -95,91 +42,7 @@ export default function Header() {
   return (
     <div className='overflow-hidden bg-gradient-RedOrange pb-2 pt-2'>
       <div className='container'>
-        <div className='flex justify-end'>
-          <Popover
-            renderPopover={
-              <div className='relative rounded-sm border border-gray-200 bg-white shadow-md'>
-                <div className='flex flex-col px-3 py-2'>
-                  <button className='px-3 py-2 text-[12px] hover:text-orange'>Vietnamese</button>
-                  <button className='mt-2 px-3 py-2 text-[12px] hover:text-orange'>English</button>
-                </div>
-              </div>
-            }
-            className='flex cursor-pointer items-center py-1 text-[12px] text-white  hover:text-gray-300'
-          >
-            <LanguageIcon
-              sx={{
-                color: 'white',
-                hover: {
-                  color: grey[300]
-                }
-              }}
-            />
-            <span className='mx-1'>Vietnamese</span>
-            <KeyboardArrowDownIcon
-              sx={{
-                color: 'white',
-                hover: {
-                  color: grey[300]
-                }
-              }}
-            />
-          </Popover>
-          <Popover
-            className='ml-6 flex cursor-pointer items-center py-1 text-[12px] text-white hover:text-gray-300'
-            renderPopover={
-              <div className='relative rounded-sm border border-gray-200 bg-white shadow-md'>
-                <div className='flex flex-col px-3 py-2'>
-                  {isAuthenticated ? (
-                    <Fragment>
-                      <button
-                        className='px-3 py-2 text-[12px] hover:text-orange'
-                        onClick={() => navigate(path.profile)}
-                      >
-                        Tài khoản của tôi
-                      </button>
-                      <button className='mt-2 px-3 py-2 text-[12px] hover:text-orange'>Đơn mua</button>
-                      <button className='mt-2 px-3 py-2 text-[12px] hover:text-orange' onClick={handleLogout}>
-                        Đăng xuất
-                      </button>
-                    </Fragment>
-                  ) : (
-                    <Fragment>
-                      <button
-                        className='mt-2 px-3 py-2 text-[12px] hover:text-orange'
-                        onClick={() => navigate(path.register)}
-                      >
-                        Đăng ký
-                      </button>
-                      <button
-                        className='mt-2 px-3 py-2 text-[12px] hover:text-orange'
-                        onClick={() => navigate(path.login)}
-                      >
-                        Đăng nhập
-                      </button>
-                    </Fragment>
-                  )}
-                </div>
-              </div>
-            }
-          >
-            {profile ? (
-              <Fragment>
-                <Avatar {...stringAvatar(`${profile?.email}`)} src='' alt='' />
-                <span>{profile?.email}</span>
-              </Fragment>
-            ) : (
-              <Avatar
-                sx={{
-                  width: '25px',
-                  height: '25px',
-                  marginRight: '8px',
-                  flexShrink: '0'
-                }}
-              />
-            )}
-          </Popover>
-        </div>
+        <NavHeader />
         <div className='mt-2 grid grid-cols-12 items-center gap-4'>
           <Link to={'/'} className='col-span-2'>
             <svg viewBox='0 0 192 65' className='h-9 fill-white lg:h-14'>
@@ -207,8 +70,8 @@ export default function Header() {
           </form>
           <Popover
             renderPopover={
-              <div className='relative max-w-[400px] rounded-sm border border-gray-200 bg-white p-2 text-[13px] shadow-md'>
-                {purchasesInCart ? (
+              <div className='relative min-w-[350px] max-w-[400px] rounded-sm border border-gray-200 bg-white p-2 text-[13px] shadow-md'>
+                {purchasesInCart && purchasesInCart.length > 0 ? (
                   <Fragment>
                     <div className=''>
                       <span className='opacity-60'>Sản phẩm mới thêm</span>
@@ -246,7 +109,7 @@ export default function Header() {
                     </div>
                   </Fragment>
                 ) : (
-                  <div className='relative flex max-w-[400px] flex-col items-center justify-center rounded-sm border border-gray-200 bg-white p-2 text-[13px] shadow-md'>
+                  <div className='relative flex min-w-[350px] max-w-[400px] flex-col items-center justify-center rounded-sm border border-gray-200 bg-white p-2 text-[13px] shadow-md'>
                     <HighlightOffIcon
                       sx={{
                         fontSize: '50px',
