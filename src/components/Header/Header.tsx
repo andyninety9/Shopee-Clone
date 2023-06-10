@@ -25,6 +25,7 @@ import Badge, { BadgeProps } from '@mui/material/Badge'
 import { styled } from '@mui/material/styles'
 import IconButton from '@mui/material/IconButton'
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart'
+import { queryClient } from 'src/main'
 
 type FormData = Pick<Schema, 'name'>
 const nameSchema = schema.pick(['name'])
@@ -46,6 +47,7 @@ export default function Header() {
     onSuccess: () => {
       setIsAuthenticated(false)
       setProfile(null)
+      queryClient.removeQueries({ queryKey: ['purchase', { status: purchasesStatus.inCart }] })
       navigate('/')
       toast.success('Đăng xuất thành công')
     }
@@ -56,7 +58,8 @@ export default function Header() {
 
   const { data: purchasesInCartData } = useQuery({
     queryKey: ['purchase', { status: purchasesStatus.inCart }],
-    queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart })
+    queryFn: () => purchaseApi.getPurchases({ status: purchasesStatus.inCart }),
+    enabled: isAuthenticated
   })
 
   const purchasesInCart = purchasesInCartData?.data.data
@@ -237,7 +240,9 @@ export default function Header() {
                         Thêm {purchasesInCart.length > MAX_PURCHASES ? purchasesInCart.length - MAX_PURCHASES : ''} sản
                         phẩm vào giỏ hàng
                       </div>
-                      <button className='rounded-sm bg-orange px-3 py-2 text-white'>Xem giỏ hàng</button>
+                      <Link to={path.cart} className='rounded-sm bg-orange px-3 py-2 text-white'>
+                        Xem giỏ hàng
+                      </Link>
                     </div>
                   </Fragment>
                 ) : (
