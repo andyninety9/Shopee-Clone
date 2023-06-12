@@ -3,7 +3,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown'
 import { grey } from '@mui/material/colors'
 import Avatar from '@mui/material/Avatar'
 import Popover from 'src/components/Popover/Popover'
-import { Fragment, useContext } from 'react'
+import { Fragment, useContext, useEffect } from 'react'
 import { stringAvatar } from 'src/utils/utils'
 import { AppContext } from 'src/contexts/app.context'
 import path from 'src/constants/path'
@@ -98,8 +98,8 @@ export default function NavHeader() {
       >
         {profile ? (
           <Fragment>
-            <Avatar {...stringAvatar(`${profile?.email}`)} src='' alt='' />
-            <span>{profile?.email}</span>
+            <Avatar {...stringAvatar(`${profile.name || profile?.email}`)} src='' alt='' />
+            <span>{profile.name || profile?.email}</span>
           </Fragment>
         ) : (
           <Avatar

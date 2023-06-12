@@ -4,8 +4,15 @@ import EditIcon from '@mui/icons-material/Edit'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
 import VpnKeyOutlinedIcon from '@mui/icons-material/VpnKeyOutlined'
 import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined'
+import { useQuery } from '@tanstack/react-query'
+import userApi from 'src/apis/user.api'
 
 export default function UserSideNav() {
+  const { data: profileData } = useQuery({
+    queryKey: ['profile'],
+    queryFn: userApi.getProfile
+  })
+  const profile = profileData?.data.data
   return (
     <div className=''>
       <div className='flex items-center border-b border-b-gray-200 py-4'>
@@ -18,7 +25,7 @@ export default function UserSideNav() {
         </Link>
         <div className='flex-grow pl-4'>
           <div className='mb-1 truncate font-semibold text-gray-600'>
-            Mai Anh Duy
+            {profile?.name || 'Username'}
             <Link to={path.profile} className='flex items-center font-light capitalize text-gray-500'>
               <EditIcon
                 sx={{

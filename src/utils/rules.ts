@@ -1,5 +1,5 @@
-import type { RegisterOptions, UseFormGetValues } from 'react-hook-form'
 import * as yup from 'yup'
+// eslint-disable-next-line import/named
 import { AnyObject } from 'yup'
 
 // type Rules = { [key in 'email' | 'password' | 'confirm_password']?: RegisterOptions }
@@ -48,5 +48,18 @@ export const schema = yup.object({
   }),
   name: yup.string().trim().required()
 })
+
+export const userSchema = yup.object({
+  name: yup.string().max(160, 'Less than 160 characters'),
+  phone: yup.string().max(20, 'Less than 20 characters'),
+  address: yup.string().max(160, 'Less than 160 characters'),
+  avatar: yup.string().max(1000, 'Less than 1000 characters'),
+  date_of_birth: yup.date().max(new Date(), 'Your D.O.B invalid'),
+  password: schema.fields['password'],
+  new_password: schema.fields['password'],
+  confirm_password: schema.fields['confirm_password']
+})
+
+export type UserSchema = yup.InferType<typeof userSchema>
 
 export type Schema = yup.InferType<typeof schema>
