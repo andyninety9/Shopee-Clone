@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, NavLink } from 'react-router-dom'
 import path from 'src/constants/path'
 import EditIcon from '@mui/icons-material/Edit'
 import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined'
@@ -31,7 +31,15 @@ export default function UserSideNav() {
         </div>
       </div>
       <div className='mt-7'>
-        <Link to={path.profile} className='mb-5 flex items-center capitalize text-orange transition-colors'>
+        <NavLink
+          to={path.profile}
+          className={({ isActive }) =>
+            isActive
+              ? 'transition-color mb-5 flex items-center capitalize text-orange'
+              : 'mb-5 flex items-center capitalize text-gray-600 transition-colors'
+          }
+          // className='mb-5 flex items-center capitalize text-orange transition-colors'
+        >
           <AccountCircleOutlinedIcon
             sx={{
               marginRight: '12px',
@@ -40,8 +48,15 @@ export default function UserSideNav() {
             }}
           />
           Tài khoản của tôi
-        </Link>
-        <Link to={path.changePassword} className='mb-5 flex items-center capitalize text-gray-600 transition-colors'>
+        </NavLink>
+        <NavLink
+          to={path.changePassword}
+          className={({ isActive }) =>
+            isActive
+              ? 'transition-color mb-5 flex items-center capitalize text-orange'
+              : 'mb-5 flex items-center capitalize text-gray-600 transition-colors'
+          }
+        >
           <VpnKeyOutlinedIcon
             sx={{
               marginRight: '12px',
@@ -50,8 +65,15 @@ export default function UserSideNav() {
             }}
           />
           Đổi mật khẩu
-        </Link>
-        <Link to={path.historyPurchase} className='flex items-center capitalize text-gray-600 transition-colors'>
+        </NavLink>
+        <NavLink
+          to={path.historyPurchase}
+          className={({ isActive }) =>
+            isActive
+              ? 'transition-color mb-5 flex items-center capitalize text-orange'
+              : 'mb-5 flex items-center capitalize text-gray-600 transition-colors'
+          }
+        >
           <CategoryOutlinedIcon
             sx={{
               marginRight: '12px',
@@ -60,7 +82,7 @@ export default function UserSideNav() {
             }}
           />
           Đơn mua
-        </Link>
+        </NavLink>
       </div>
     </div>
   )
