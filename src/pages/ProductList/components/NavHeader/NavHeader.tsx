@@ -4,7 +4,7 @@ import { grey } from '@mui/material/colors'
 import Avatar from '@mui/material/Avatar'
 import Popover from 'src/components/Popover/Popover'
 import { Fragment, useContext, useEffect } from 'react'
-import { stringAvatar } from 'src/utils/utils'
+import { getAvatarUrl, stringAvatar } from 'src/utils/utils'
 import { AppContext } from 'src/contexts/app.context'
 import path from 'src/constants/path'
 import { useNavigate } from 'react-router-dom'
@@ -98,7 +98,13 @@ export default function NavHeader() {
       >
         {profile ? (
           <Fragment>
-            <Avatar {...stringAvatar(`${profile.name || profile?.email}`)} src='' alt='' />
+            {profile.avatar === undefined ? (
+              <Avatar {...stringAvatar(`${profile.name || profile?.email}`)} />
+            ) : (
+              <div className='h-6 w-6 mr-2 shadow-sm flex-shrink-0 overflow-hidden rounded-full border border-black/10'>
+                <img src={getAvatarUrl(profile?.avatar)} alt='' className='h-full w-full object-cover' />
+              </div>
+            )}
             <span>{profile.name || profile?.email}</span>
           </Fragment>
         ) : (

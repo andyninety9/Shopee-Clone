@@ -6,19 +6,31 @@ import Input from 'src/components/Input'
 import { UserSchema, userSchema } from 'src/utils/rules'
 import { yupResolver } from '@hookform/resolvers/yup'
 import InputNumber from 'src/components/InputNumber'
-import { useEffect } from 'react'
+import { useContext, useEffect, useMemo, useRef, useState } from 'react'
 import DateSelect from '../../Components/DateSelect'
 import { toast } from 'react-toastify'
+import { AppContext } from 'src/contexts/app.context'
+import { setProfileToLS } from 'src/utils/auth'
+import { getAvatarUrl } from 'src/utils/utils'
 
 type FormData = Pick<UserSchema, 'name' | 'address' | 'phone' | 'avatar' | 'date_of_birth'>
 const profileSchema = userSchema.pick(['name', 'address', 'phone', 'date_of_birth', 'avatar'])
+
 export default function Profile() {
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const { setProfile } = useContext(AppContext)
+  const [file, setFile] = useState<File>()
+  const previewImage = useMemo(() => {
+    return file ? URL.createObjectURL(file) : ''
+  }, [file])
+  const uploadAvatarMutation = useMutation(userApi.uploadAvatar)
   const {
     register,
     control,
     formState: { errors },
     handleSubmit,
-    setValue
+    setValue,
+    watch
   } = useForm<FormData>({
     defaultValues: {
       name: '',
@@ -29,12 +41,23 @@ export default function Profile() {
     },
     resolver: yupResolver(profileSchema)
   })
+  const avatar = watch('avatar')
   const { data: profileData, refetch } = useQuery({
     queryKey: ['profile'],
     queryFn: userApi.getProfile
   })
+
   const profile = profileData?.data.data
   const updateProfileMutation = useMutation(userApi.updateProfile)
+
+  const handleUpload = () => {
+    fileInputRef.current?.click()
+  }
+
+  const onFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const fileFromLocal = event.target.files?.[0]
+    setFile(fileFromLocal)
+  }
 
   useEffect(() => {
     if (profile) {
@@ -48,12 +71,28 @@ export default function Profile() {
 
   const onSubmit = handleSubmit(async (data) => {
     console.log(data)
-    await updateProfileMutation.mutateAsync({
-      ...data,
-      date_of_birth: data.date_of_birth?.toISOString()
-    })
-    refetch()
-    toast.success('Cập nhật thông tin thành công')
+    try {
+      let avatarName = avatar
+      if (file) {
+        const form = new FormData()
+        form.append('image', file)
+        const uploadRes = await uploadAvatarMutation.mutateAsync(form)
+        avatarName = uploadRes.data.data
+        setValue('avatar', avatarName)
+      }
+      const res = await updateProfileMutation.mutateAsync({
+        ...data,
+        date_of_birth: data.date_of_birth?.toISOString(),
+        avatar: avatarName
+      })
+      setProfile(res.data.data)
+      setProfileToLS(res.data.data)
+      refetch()
+      toast.success('Cập nhật thông tin thành công')
+    } catch (error) {
+      console.log(error)
+      toast.error('Cập nhật không thành công')
+    }
   })
   return (
     <div className='rounded-sm bg-white px-2 pb-10 shadow md:px-7 md:pb-20'>
@@ -136,13 +175,20 @@ export default function Profile() {
           <div className='flex flex-col items-center'>
             <div className='my-5 h-24 w-24'>
               <img
-                src='https://images.unsplash.com/photo-1686386084459-8d9d14400a4b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1035&q=80'
+                src={previewImage ? previewImage : getAvatarUrl(profile?.avatar)}
                 alt=''
                 className='mb-5 h-full w-full rounded-full object-cover'
               />
             </div>
-            <input className='hidden' type='file' accept='.jpg, .jpeg,.png' />
+            <input
+              className='hidden'
+              type='file'
+              accept='.jpg, .jpeg,.png'
+              ref={fileInputRef}
+              onChange={onFileChange}
+            />
             <button
+              onClick={handleUpload}
               type='button'
               className='flex h-10 items-center justify-end rounded-sm border bg-white px-6 text-sm text-gray-600 shadow-sm'
             >
